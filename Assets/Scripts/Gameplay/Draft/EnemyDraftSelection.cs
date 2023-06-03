@@ -59,7 +59,12 @@ public class EnemyDraftSelection : MonoBehaviour
         selectedTokenScaler.ScaleUp(tokenScaleSpeed);
         TokenMoveController moveController = selectedToken.GetComponent<TokenMoveController>();
         moveController.StartMoveToPosition(selectedTile.transform.position);
+        TokenMoveOptions tokenMoveOptions = selectedToken.GetComponent<TokenMoveOptions>();
+        tokenMoveOptions.currentTile = selectedTile;
         isSelecting = true;
+
+        // Set new parent for token
+        selectedToken.transform.SetParent(enemyTokenParent.transform);
 
         // Remove selected token from lists
         tokens.Remove(selectedToken);

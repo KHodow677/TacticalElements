@@ -255,7 +255,8 @@ MonoBehaviour:
   - {fileID: 6030053082722621226}
   - {fileID: 2426706853898852204}
   tokenScalers: []
-  selectedTokenObject: {fileID: 0}
+  tokenStates: []
+  selectedToken: {fileID: 0}
 --- !u!114 &3856742090415361131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,15 +269,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 085f01401e3cd6642853a2daa17dbca9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timePerTurn: 1.5
   isSelecting: 0
   isEnemyTurn: 0
-  tokenScaleSpeed: 0
+  tokenScaleSpeed: 0.1
   enemyTokenParent: {fileID: 0}
-  tokens: []
-  tiles: []
+  tokens:
+  - {fileID: 4724564395056882053}
+  - {fileID: 6075369436082809343}
+  - {fileID: 2829305142785600544}
+  - {fileID: 467447909844012640}
+  - {fileID: 5072808999712381595}
+  - {fileID: 780666824661268179}
+  - {fileID: 7953770559533695540}
+  - {fileID: 7156742410127049864}
+  - {fileID: 780901589377883554}
+  - {fileID: 5335224684635833279}
+  - {fileID: 6030053082722621226}
+  - {fileID: 2426706853898852204}
+  tiles:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   tokenScalers: []
-  selectedTokenObject: {fileID: 0}
-  selectedTileObject: {fileID: 0}
+  selectedToken: {fileID: 0}
+  selectedTile: {fileID: 0}
 --- !u!1 &2432845531397431797
 GameObject:
   m_ObjectHideFlags: 0

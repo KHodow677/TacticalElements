@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DraftTokenSelection : MonoBehaviour {
-    private static DraftTokenSelection _instance;
-    public static DraftTokenSelection instance { get { return _instance; } }
+public class GameTokenSelection : MonoBehaviour
+{
+    private static GameTokenSelection _instance;
+    public static GameTokenSelection instance { get { return _instance; } }
     [HideInInspector] public bool isSelecting;
     [HideInInspector] public bool isPlayerTurn = true;
     [SerializeField] private float tokenScaleSpeed;
-    [SerializeField] private GameObject playerTokenParent;
     [SerializeField] public List<GameObject> tokens;
     [HideInInspector] public List<ScaleObject> tokenScalers;
     [HideInInspector] public List<TokenState> tokenStates;
@@ -24,7 +24,22 @@ public class DraftTokenSelection : MonoBehaviour {
         }
         else { _instance = this; }
     }
+    
     private void Start() {
+        SelectionManager.instance.gameModeChanged += OnGameplayMode;
+        isSelecting = false;
+    }
+
+    private void OnGameplayMode() {
+        // Load up list of player tokens from child objects
+        int childCount = transform.childCount;
+        for (int i = 0; i < childCount; i++) {
+            Transform childTransform = transform.GetChild(i);
+            GameObject childObject = childTransform.gameObject;
+
+            tokens.Add(childObject);
+        }
+
         // Set up scaling and state components of tokens
         tokenScalers = new List<ScaleObject>();
         tokenStates = new List<TokenState>();
@@ -32,8 +47,11 @@ public class DraftTokenSelection : MonoBehaviour {
             tokenScalers.Add(tokens[i].GetComponent<ScaleObject>());
             tokenStates.Add(tokens[i].GetComponent<TokenState>());
         }
-        ActivateTokenSelection();
+
+        // Force switch states
         SelectionManager.instance.timeUp += SwitchStates;
+        SelectionManager.instance.ForceTimeUp();
+        //SelectionManager.instance.CheckSubscribers();
     }
 
     /// <summary>
@@ -52,15 +70,38 @@ public class DraftTokenSelection : MonoBehaviour {
         // Add listener to spacePressed event
         SelectionManager.instance.spacePressed += OnSpacePressed;
 
+        // Sort tokens by their transform position
+        tokens.Sort((obj1, obj2) =>
+        {
+            Vector3 pos1 = obj1.transform.position;
+            Vector3 pos2 = obj2.transform.position;
+
+            // Sort by ascending transform.position.y
+            int yComparison = pos1.y.CompareTo(pos2.y);
+            if (yComparison != 0)
+            {
+                return yComparison;
+            }
+
+            // For objects with the same transform.position.y, sort by ascending transform.position.x
+            return pos1.x.CompareTo(pos2.x);
+        });
+
         if(tokens.Count == 0) {
-            // End draft and tear down
+            // End draft
+            Debug.Log("Tokens empty");
             SelectionManager.instance.spacePressed -= OnSpacePressed;
-            SelectionManager.instance.timeUp -= SwitchStates;
-            SelectionManager.instance.timeUp -= DraftTileSelection.instance.SwitchStates;
-            SelectionManager.instance.timeUp -= EnemyDraftSelection.instance.SwitchStates;
             SelectionManager.instance.PauseClock();
-            SelectionManager.instance.gameMode = SelectionManager.GameMode.Gameplay;
+            SelectionManager.instance.gameMode = SelectionManager.GameMode.GameOver;
             return;
+        }
+
+        // Set up scaling and state components of tokens
+        tokenScalers = new List<ScaleObject>();
+        tokenStates = new List<TokenState>();
+        for (int i = 0; i < tokens.Count; i++) {
+            tokenScalers.Add(tokens[i].GetComponent<ScaleObject>());
+            tokenStates.Add(tokens[i].GetComponent<TokenState>());
         }
 
         // Set up
@@ -82,26 +123,16 @@ public class DraftTokenSelection : MonoBehaviour {
 
         // Set selected token
         selectedToken = selectedTokenScaler.gameObject;
-
-        // Set new parent for token
-        selectedToken.transform.SetParent(playerTokenParent.transform);
-
-        // Remove selected token from lists
-        tokens.Remove(selectedToken);
-        tokenScalers.Remove(selectedTokenScaler);
-        tokenStates.Remove(selectedTokenState);
-        EnemyDraftSelection enemyDraftSelection = EnemyDraftSelection.instance;
-        enemyDraftSelection.tokens.Remove(selectedToken);
-        enemyDraftSelection.tokenScalers.Remove(selectedTokenScaler);
-
+        Debug.Log(selectedToken.name + " selected");
         // Tear down
         selectedTokenScaler.ScaleDown(tokenScaleSpeed);
         isSelecting = false;
     }
 
+    
     private IEnumerator SetSameTurnDelayed() {
         yield return new WaitForSeconds(0.5f * SelectionManager.instance.timePerTurn);
-        DraftTileSelection.instance.sameTurn = true;
+        GameTileSelection.instance.sameTurn = true;
     }
 
     /// <summary>
