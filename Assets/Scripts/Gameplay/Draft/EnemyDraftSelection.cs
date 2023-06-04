@@ -65,6 +65,7 @@ public class EnemyDraftSelection : MonoBehaviour
 
         // Set new parent for token
         selectedToken.transform.SetParent(enemyTokenParent.transform);
+        selectedToken.tag = "Enemy";
 
         // Remove selected token from lists
         tokens.Remove(selectedToken);

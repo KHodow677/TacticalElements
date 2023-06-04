@@ -154,7 +154,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &113838127
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -433,7 +433,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Hold SPACE to Quit
+  m_text: 'Press SPACE
+
+    Hold SPACE to Quit'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: da8c3548652df994e96a95721d6c1c17, type: 2}
   m_sharedMaterial: {fileID: 2219309605284079523, guid: da8c3548652df994e96a95721d6c1c17, type: 2}
@@ -797,6 +799,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1652425198}
+  - component: {fileID: 1652425199}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -819,6 +822,27 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1652425199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1652425197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5c7bb47ae641614292f5bcffd02b98f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timePerTurn: 1
+  isSelecting: 0
+  isEnemyTurn: 0
+  tokenScaleSpeed: 0.1
+  tokens: []
+  tiles: []
+  tokenScalers: []
+  selectedToken: {fileID: 0}
+  selectedTile: {fileID: 0}
 --- !u!1 &1673207555 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8816570694163272514, guid: 5f5e2b81d75319f46b6431589f7e2711, type: 3}
@@ -1062,6 +1086,10 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 519420031}
+    - target: {fileID: 2432845531397431784, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3856742090415361131, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
       propertyPath: timePerTurn
       value: 1
@@ -1125,7 +1153,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3576825087567514200, guid: 9e97087efaccdd243951b32b79483105, type: 3}
       propertyPath: timePerTurn
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3576825087567514200, guid: 9e97087efaccdd243951b32b79483105, type: 3}
       propertyPath: spaceHoldTimeToQuit

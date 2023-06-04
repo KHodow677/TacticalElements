@@ -85,6 +85,7 @@ public class DraftTokenSelection : MonoBehaviour {
 
         // Set new parent for token
         selectedToken.transform.SetParent(playerTokenParent.transform);
+        selectedToken.tag = "Player";
 
         // Remove selected token from lists
         tokens.Remove(selectedToken);

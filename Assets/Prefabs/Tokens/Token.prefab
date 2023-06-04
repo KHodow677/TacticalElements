@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4196925897442352048}
   - component: {fileID: 4196925897442352049}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4196925897561618326}
   - component: {fileID: 4196925897561618345}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Token Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,7 +204,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4196925897572727205}
   - component: {fileID: 4196925897572727202}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -288,7 +288,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4196925898100372843}
   - component: {fileID: 4196925898100372840}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -372,7 +372,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4196925898153217394}
   - component: {fileID: 4196925898153217395}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -456,7 +456,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4196925898230289261}
   - component: {fileID: 4196925898230289260}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Env Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -565,7 +565,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4196925898659649176}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player Indicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -606,7 +606,7 @@ GameObject:
   - component: {fileID: 8818512551924925926}
   - component: {fileID: 7777994923897193268}
   - component: {fileID: 2616551111637177638}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Token
   m_TagString: Untagged
   m_Icon: {fileID: 0}

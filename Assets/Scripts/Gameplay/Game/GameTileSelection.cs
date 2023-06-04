@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameTileSelection : MonoBehaviour
-{
+public class GameTileSelection : MonoBehaviour {
     private static GameTileSelection _instance;
     public static GameTileSelection instance { get { return _instance; } }
     [HideInInspector] public bool isSelecting;
@@ -88,16 +87,12 @@ public class GameTileSelection : MonoBehaviour
     }
 
     private IEnumerator FindMoveOptionsFromSelectedToken() {
+        tiles = new List<GameObject>();
         while (GameTokenSelection.instance.selectedToken == null) {
             yield return null;
         }
         GameObject selectedToken = GameTokenSelection.instance.selectedToken;
-        TokenMoveOptions selectedTokenMoveOptions = selectedToken.GetComponent<TokenMoveOptions>();
-        foreach (Vector3 moveOffset in selectedTokenMoveOptions.moveOffsetOptions) {
-            Vector3 tilePosition = selectedToken.transform.position + moveOffset;
-            if (GetTileAtPosition(tilePosition) == null) { continue; }
-            tiles.Add(GetTileAtPosition(tilePosition));
-        }
+        tiles = GetAvailableTiles(selectedToken);
 
         // Set up scaling components of tokens
         tileScalers = new List<ScaleObject>();
@@ -122,22 +117,47 @@ public class GameTileSelection : MonoBehaviour
         // Set up enemy turn
         StartCoroutine(SetEnemyTurnDelayed());
         GameTokenSelection.instance.isPlayerTurn = false;
+        EnemyDraftSelection.instance.isEnemyTurn = true;
         isPlayerTurn = false;
         sameTurn = false;
     }
 
     private IEnumerator SetEnemyTurnDelayed() {
         yield return new WaitForSeconds(0.5f * SelectionManager.instance.timePerTurn);
-        EnemyDraftSelection.instance.isEnemyTurn = true;
+        EnemyGameSelection.instance.isEnemyTurn = true;
     }
 
-    private GameObject GetTileAtPosition(Vector3 position) {
+    public GameObject GetTileAtPosition(Vector3 position) {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(position, 0.1f, LayerMask.GetMask("Tile"));
 
         if (colliders != null && colliders.Length > 0) {
             return colliders[0].gameObject;
         }
         return null;
+    }
+
+    public GameObject GetTokenAtPosition(Vector3 position, string side) {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(position, 0.1f, LayerMask.GetMask("Token"));
+
+        if (colliders != null && colliders.Length > 0) {
+            if (colliders[0].gameObject.tag == side) { return colliders[0].gameObject; }
+        }
+        return null;
+    }
+
+    public List<GameObject> GetAvailableTiles( GameObject token) {
+        List<GameObject> availableTiles = new List<GameObject>();
+        TokenMoveOptions moveOptions = token.GetComponent<TokenMoveOptions>();
+        foreach (Vector3 moveOffset in moveOptions.moveOffsetOptions) {
+            Vector3 tilePosition = token.transform.position + moveOffset;
+            GameObject tokenObject = GetTokenAtPosition(tilePosition, "Player");
+            if (tokenObject != null) { continue; }
+            GameObject tileObject = GetTileAtPosition(tilePosition);
+            if (tileObject == null) { continue; }
+            Debug.Log(moveOffset);
+            availableTiles.Add(tileObject);
+        }
+        return availableTiles;
     }
 
     /// <summary>
@@ -157,5 +177,4 @@ public class GameTileSelection : MonoBehaviour
         selectedTileScaler.ScaleUp(tileScaleSpeed);
         selectedTileIndicator.ToggleTarget(true);
     }
-
 }

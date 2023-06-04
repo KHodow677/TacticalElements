@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameTokenSelection : MonoBehaviour
-{
+public class GameTokenSelection : MonoBehaviour {
     private static GameTokenSelection _instance;
     public static GameTokenSelection instance { get { return _instance; } }
     [HideInInspector] public bool isSelecting;
@@ -31,23 +30,6 @@ public class GameTokenSelection : MonoBehaviour
     }
 
     private void OnGameplayMode() {
-        // Load up list of player tokens from child objects
-        int childCount = transform.childCount;
-        for (int i = 0; i < childCount; i++) {
-            Transform childTransform = transform.GetChild(i);
-            GameObject childObject = childTransform.gameObject;
-
-            tokens.Add(childObject);
-        }
-
-        // Set up scaling and state components of tokens
-        tokenScalers = new List<ScaleObject>();
-        tokenStates = new List<TokenState>();
-        for (int i = 0; i < tokens.Count; i++) {
-            tokenScalers.Add(tokens[i].GetComponent<ScaleObject>());
-            tokenStates.Add(tokens[i].GetComponent<TokenState>());
-        }
-
         // Force switch states
         SelectionManager.instance.timeUp += SwitchStates;
         SelectionManager.instance.ForceTimeUp();
@@ -69,6 +51,26 @@ public class GameTokenSelection : MonoBehaviour
     private void ActivateTokenSelection() {
         // Add listener to spacePressed event
         SelectionManager.instance.spacePressed += OnSpacePressed;
+        
+        // Load up list of player tokens from child objects
+        tokens = new List<GameObject>();
+        int childCount = transform.childCount;
+        for (int i = 0; i < childCount; i++) {
+            Transform childTransform = transform.GetChild(i);
+            GameObject childObject = childTransform.gameObject;
+
+            if (GameTileSelection.instance.GetAvailableTiles(childObject).Count == 0) { continue; }
+
+            tokens.Add(childObject);
+        }
+
+        // Set up scaling and state components of tokens
+        tokenScalers = new List<ScaleObject>();
+        tokenStates = new List<TokenState>();
+        for (int i = 0; i < tokens.Count; i++) {
+            tokenScalers.Add(tokens[i].GetComponent<ScaleObject>());
+            tokenStates.Add(tokens[i].GetComponent<TokenState>());
+        }
 
         // Sort tokens by their transform position
         tokens.Sort((obj1, obj2) =>
@@ -78,17 +80,13 @@ public class GameTokenSelection : MonoBehaviour
 
             // Sort by ascending transform.position.y
             int yComparison = pos1.y.CompareTo(pos2.y);
-            if (yComparison != 0)
-            {
-                return yComparison;
-            }
+            if (yComparison != 0) { return yComparison; }
 
             // For objects with the same transform.position.y, sort by ascending transform.position.x
             return pos1.x.CompareTo(pos2.x);
         });
 
         if(tokens.Count == 0) {
-            // End draft
             Debug.Log("Tokens empty");
             SelectionManager.instance.spacePressed -= OnSpacePressed;
             SelectionManager.instance.PauseClock();
@@ -123,7 +121,6 @@ public class GameTokenSelection : MonoBehaviour
 
         // Set selected token
         selectedToken = selectedTokenScaler.gameObject;
-        Debug.Log(selectedToken.name + " selected");
         // Tear down
         selectedTokenScaler.ScaleDown(tokenScaleSpeed);
         isSelecting = false;
@@ -133,6 +130,7 @@ public class GameTokenSelection : MonoBehaviour
     private IEnumerator SetSameTurnDelayed() {
         yield return new WaitForSeconds(0.5f * SelectionManager.instance.timePerTurn);
         GameTileSelection.instance.sameTurn = true;
+        selectedToken = null;
     }
 
     /// <summary>
