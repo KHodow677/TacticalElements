@@ -7,6 +7,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2616551111637177638, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[0].x
+      value: 3.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616551111637177638, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[1].y
+      value: 3.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616551111637177638, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[2].x
+      value: -3.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616551111637177638, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[3].y
+      value: -3.2
+      objectReference: {fileID: 0}
     - target: {fileID: 4196925898230289260, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
       propertyPath: m_Color.b
       value: 0.40784314
@@ -29,7 +45,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4196925898984772871, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
       propertyPath: m_Name
-      value: Land Storm Token
+      value: Land Storm Token Variant
       objectReference: {fileID: 0}
     - target: {fileID: 4196925898984772871, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
       propertyPath: m_IsActive
@@ -78,6 +94,22 @@ PrefabInstance:
     - target: {fileID: 4196925898984772889, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7777994923897193268, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: particleColor.a
+      value: 0.9019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 7777994923897193268, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: particleColor.b
+      value: 0.40784314
+      objectReference: {fileID: 0}
+    - target: {fileID: 7777994923897193268, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: particleColor.g
+      value: 0.5058824
+      objectReference: {fileID: 0}
+    - target: {fileID: 7777994923897193268, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: particleColor.r
+      value: 0.53333336
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}

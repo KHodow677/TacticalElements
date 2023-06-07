@@ -7,6 +7,42 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2616551111637177638, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: moveOffsetOptions.Array.size
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616551111637177638, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[4].x
+      value: -1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616551111637177638, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[4].y
+      value: -1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616551111637177638, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[5].x
+      value: 1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616551111637177638, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[5].y
+      value: -1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616551111637177638, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[6].x
+      value: 1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616551111637177638, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[6].y
+      value: 1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616551111637177638, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[7].x
+      value: -1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2616551111637177638, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[7].y
+      value: 1.6
+      objectReference: {fileID: 0}
     - target: {fileID: 4196925898230289260, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
       propertyPath: m_Color.b
       value: 0.7490196
@@ -29,7 +65,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4196925898984772871, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
       propertyPath: m_Name
-      value: Light Token
+      value: Light Token Variant
       objectReference: {fileID: 0}
     - target: {fileID: 4196925898984772871, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
       propertyPath: m_IsActive
@@ -78,6 +114,22 @@ PrefabInstance:
     - target: {fileID: 4196925898984772889, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7777994923897193268, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: particleColor.a
+      value: 0.9019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 7777994923897193268, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: particleColor.b
+      value: 0.7490196
+      objectReference: {fileID: 0}
+    - target: {fileID: 7777994923897193268, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: particleColor.g
+      value: 0.7490196
+      objectReference: {fileID: 0}
+    - target: {fileID: 7777994923897193268, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}
+      propertyPath: particleColor.r
+      value: 0.7490196
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4237a9382fbfde94bbbedfdc0dd26199, type: 3}

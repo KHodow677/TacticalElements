@@ -78,6 +78,8 @@ public class DraftTileSelection : MonoBehaviour {
         // Remove listener to spacePressed event
         SelectionManager.instance.spacePressed -= OnSpacePressed;
 
+        DraftTokenSelection.instance.HandleDisplayToken(false);
+
         // Unhighlight and untarget all selectable tiles
         foreach (ToggleIndicators tileIndicator in tileIndicators) {
             tileIndicator.ToggleHighlight(false);

@@ -7,6 +7,7 @@ public class DraftTokenSelection : MonoBehaviour {
     public static DraftTokenSelection instance { get { return _instance; } }
     [HideInInspector] public bool isSelecting;
     [HideInInspector] public bool isPlayerTurn = true;
+    [SerializeField] private GameObject tokenDisplayObject;
     [SerializeField] private float tokenScaleSpeed;
     [SerializeField] private GameObject playerTokenParent;
     [SerializeField] public List<GameObject> tokens;
@@ -68,6 +69,7 @@ public class DraftTokenSelection : MonoBehaviour {
         selectedTokenState = tokenStates[0];
         selectedTokenScaler.ScaleUp(tokenScaleSpeed);
         selectedTokenState.SetPlayerOwned();
+        HandleDisplayToken(true);
         StartCoroutine(SetSameTurnDelayed());
         isSelecting = true;
     }
@@ -105,6 +107,24 @@ public class DraftTokenSelection : MonoBehaviour {
         DraftTileSelection.instance.sameTurn = true;
     }
 
+    private IEnumerator SetInactiveDelayed(GameObject obj) {
+        yield return new WaitForSeconds(tokenScaleSpeed);
+        obj.SetActive(false);
+    }
+
+    public void HandleDisplayToken(bool isActivating) {
+        GameObject tokenDisplay = tokenDisplayObject.transform.Find(selectedTokenScaler.gameObject.name).gameObject;
+        if (isActivating) {
+            tokenDisplay.SetActive(true);
+            tokenDisplay.transform.GetChild(tokenDisplay.transform.childCount - 1).GetChild(0).gameObject.SetActive(true);
+            tokenDisplay.GetComponent<ScaleObject>().ScaleUp(tokenScaleSpeed);
+            return;
+        }
+        tokenDisplay.GetComponent<ScaleObject>().ScaleDown(tokenScaleSpeed);
+        tokenDisplay.transform.GetChild(tokenDisplay.transform.childCount - 1).GetChild(0).gameObject.SetActive(false);
+        StartCoroutine(SetInactiveDelayed(tokenDisplay));
+    }
+
     /// <summary>
     /// Called when space is pressed.
     /// </summary>
@@ -112,6 +132,7 @@ public class DraftTokenSelection : MonoBehaviour {
         // Scale down and unhighlight current tile
         selectedTokenScaler.ScaleDown(tokenScaleSpeed);
         selectedTokenState.UnsetPlayerOwned();
+        HandleDisplayToken(false);
 
         // Get next tile, bounce back if end of list is reached
         int currentIndex = tokenScalers.IndexOf(selectedTokenScaler);
@@ -122,5 +143,6 @@ public class DraftTokenSelection : MonoBehaviour {
         // Scale up next tile
         selectedTokenScaler.ScaleUp(tokenScaleSpeed);
         selectedTokenState.SetPlayerOwned();
+        HandleDisplayToken(true);
     }
 }

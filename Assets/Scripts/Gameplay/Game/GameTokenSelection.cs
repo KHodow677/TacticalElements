@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameTokenSelection : MonoBehaviour {
     private static GameTokenSelection _instance;
     public static GameTokenSelection instance { get { return _instance; } }
+    [SerializeField] private GameObject tokenDisplayObject;
+    [SerializeField] private SceneFader sceneFader;
     [HideInInspector] public bool isSelecting;
     [HideInInspector] public bool isPlayerTurn = true;
     [SerializeField] private float tokenScaleSpeed;
@@ -58,8 +61,10 @@ public class GameTokenSelection : MonoBehaviour {
         for (int i = 0; i < childCount; i++) {
             Transform childTransform = transform.GetChild(i);
             GameObject childObject = childTransform.gameObject;
+            if (childObject.activeInHierarchy == false) { continue; }
 
-            if (GameTileSelection.instance.GetAvailableTiles(childObject).Count == 0) { continue; }
+            int tileCount = GameTileSelection.instance.GetAvailableTiles(childObject, "Player").Count;
+            if (tileCount == 0) { continue; }
 
             tokens.Add(childObject);
         }
@@ -87,10 +92,11 @@ public class GameTokenSelection : MonoBehaviour {
         });
 
         if(tokens.Count == 0) {
-            Debug.Log("Tokens empty");
             SelectionManager.instance.spacePressed -= OnSpacePressed;
             SelectionManager.instance.PauseClock();
             SelectionManager.instance.gameMode = SelectionManager.GameMode.GameOver;
+            StartCoroutine(sceneFader.FadeAndLoadScene(SceneFader.FadeDirection.In, "Lose Scene"));
+            SceneManager.LoadScene("Lose Scene");
             return;
         }
 
@@ -102,11 +108,17 @@ public class GameTokenSelection : MonoBehaviour {
             tokenStates.Add(tokens[i].GetComponent<TokenState>());
         }
 
+        Debug.Log("Token count: " + tokens.Count);
+        Debug.Log("Scaler count: " + tokenScalers.Count);
+
         // Set up
         selectedTokenScaler = tokenScalers[0];
         selectedTokenState = tokenStates[0];
         selectedTokenScaler.ScaleUp(tokenScaleSpeed);
-        selectedTokenState.SetPlayerOwned();
+        GameTileSelection.instance.HighlightAvailableTiles(selectedTokenScaler.gameObject, "Player");
+
+        HandleDisplayToken(true);
+
         StartCoroutine(SetSameTurnDelayed());
         isSelecting = true;
     }
@@ -121,16 +133,34 @@ public class GameTokenSelection : MonoBehaviour {
 
         // Set selected token
         selectedToken = selectedTokenScaler.gameObject;
+
         // Tear down
         selectedTokenScaler.ScaleDown(tokenScaleSpeed);
         isSelecting = false;
     }
-
     
     private IEnumerator SetSameTurnDelayed() {
         yield return new WaitForSeconds(0.5f * SelectionManager.instance.timePerTurn);
         GameTileSelection.instance.sameTurn = true;
         selectedToken = null;
+    }
+
+    private IEnumerator SetInactiveDelayed(GameObject obj) {
+        yield return new WaitForSeconds(tokenScaleSpeed);
+        obj.SetActive(false);
+    }
+
+    public void HandleDisplayToken(bool isActivating) {
+        GameObject tokenDisplay = tokenDisplayObject.transform.Find(selectedTokenScaler.gameObject.name).gameObject;
+        if (isActivating) {
+            tokenDisplay.SetActive(true);
+            tokenDisplay.transform.GetChild(tokenDisplay.transform.childCount - 1).GetChild(0).gameObject.SetActive(true);
+            tokenDisplay.GetComponent<ScaleObject>().ScaleUp(tokenScaleSpeed);
+            return;
+        }
+        tokenDisplay.GetComponent<ScaleObject>().ScaleDown(tokenScaleSpeed);
+        tokenDisplay.transform.GetChild(tokenDisplay.transform.childCount - 1).GetChild(0).gameObject.SetActive(false);
+        StartCoroutine(SetInactiveDelayed(tokenDisplay));
     }
 
     /// <summary>
@@ -139,16 +169,17 @@ public class GameTokenSelection : MonoBehaviour {
     private void OnSpacePressed() {
         // Scale down and unhighlight current tile
         selectedTokenScaler.ScaleDown(tokenScaleSpeed);
-        selectedTokenState.UnsetPlayerOwned();
+        GameTileSelection.instance.UnhighlightAvailableTiles(selectedTokenScaler.gameObject, "Player");
+        HandleDisplayToken(false);
 
         // Get next tile, bounce back if end of list is reached
         int currentIndex = tokenScalers.IndexOf(selectedTokenScaler);
         int nextIndex = (currentIndex + 1) % tokenScalers.Count;
         selectedTokenScaler = tokenScalers[nextIndex];
         selectedTokenState = tokenStates[nextIndex];
-
         // Scale up next tile
         selectedTokenScaler.ScaleUp(tokenScaleSpeed);
-        selectedTokenState.SetPlayerOwned();
+        GameTileSelection.instance.HighlightAvailableTiles(selectedTokenScaler.gameObject, "Player");
+        HandleDisplayToken(true);
     }
 }

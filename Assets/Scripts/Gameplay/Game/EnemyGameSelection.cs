@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EnemyGameSelection : MonoBehaviour {
     private static EnemyGameSelection _instance;
     public static EnemyGameSelection instance { get { return _instance; } }
+    [SerializeField] private SceneFader sceneFader;
     [SerializeField] private float timePerTurn;
     [HideInInspector] public bool isSelecting;
     [HideInInspector] public bool isEnemyTurn = false;
@@ -39,8 +41,7 @@ public class EnemyGameSelection : MonoBehaviour {
     /// Switches between selecting and not selecting tiles.
     /// </summary>
     public void SwitchStates() {
-        if (isSelecting) { SelectionManager.instance.ResetClock(); }
-        else if (isEnemyTurn) { StartCoroutine(SelectAndMoveToken()); }
+        if (isEnemyTurn) { StartCoroutine(SelectAndMoveToken()); }
     }
 
     public IEnumerator SelectAndMoveToken() {
@@ -53,9 +54,11 @@ public class EnemyGameSelection : MonoBehaviour {
         for (int i = 0; i < childCount; i++) {
             Transform childTransform = transform.GetChild(i);
             GameObject childObject = childTransform.gameObject;
+            if (childObject.activeInHierarchy == false) { continue; }
 
-            if (GameTileSelection.instance.GetAvailableTiles(childObject).Count == 0) { continue; }
-            
+            int tileCount = GameTileSelection.instance.GetAvailableTiles(childObject, "Enemy").Count;
+            if (tileCount == 0) { continue; }
+
             tokens.Add(childObject);
         }
 
@@ -69,6 +72,7 @@ public class EnemyGameSelection : MonoBehaviour {
             Debug.Log("Tokens empty");
             SelectionManager.instance.PauseClock();
             SelectionManager.instance.gameMode = SelectionManager.GameMode.GameOver;
+            StartCoroutine(sceneFader.FadeAndLoadScene(SceneFader.FadeDirection.In, "Win Scene"));
             yield break;
         }
 
@@ -78,8 +82,25 @@ public class EnemyGameSelection : MonoBehaviour {
             tokenScalers.Add(tokens[i].GetComponent<ScaleObject>());
         }
 
-        // Set up
         selectedTokenScaler = tokenScalers[UnityEngine.Random.Range(0, tokenScalers.Count)];
+        bool shouldBreak = false;
+
+        foreach (GameObject token in tokens)
+        {
+            List<GameObject> availableSpots = GameTileSelection.instance.GetAvailableTiles(token, "Enemy");
+            foreach (GameObject spot in availableSpots) {
+                GameObject tokenAtSpot = GameTileSelection.instance.GetTokenAtPosition(spot.transform.position, "Player");
+                if (tokenAtSpot != null) {
+                    selectedTokenScaler = token.GetComponent<ScaleObject>();
+                    shouldBreak = true;
+                    break;
+                }
+            }
+            if (shouldBreak) { break; }
+        }
+
+        // Set up
+
         selectedTokenScaler.ScaleUp(tokenScaleSpeed);
         isSelecting = true;
 
@@ -102,31 +123,31 @@ public class EnemyGameSelection : MonoBehaviour {
             tiles.Add(tileObject);
         }
 
-        // Set up enemy turn
-        StartCoroutine(SetPlayerTurnDelayed());
-        GameTokenSelection.instance.isPlayerTurn = false;
-        isEnemyTurn = false;
+        // Set up Player turn
+        GameTokenSelection.instance.isPlayerTurn = true;
+        GameTileSelection.instance.isPlayerTurn = true;
         GameTileSelection.instance.sameTurn = false;
+        isEnemyTurn = false;
 
         yield return new WaitForSeconds(moveController.moveDuration);
         SelectionManager.instance.UnpauseClock();
 
-        // Set selected tile
         selectedTile = tiles[UnityEngine.Random.Range(0, tiles.Count)];
+        // Set selected tile
+        for (int i = 0; i < tiles.Count; i++) {
+            GameObject tokenObject = GameTileSelection.instance.GetTokenAtPosition(tiles[i].transform.position, "Player");
+            if (tokenObject != null) {
+                selectedTile = tiles[i];
+                break;
+            }
+        }
         TokenMoveController tokenMoveController = selectedToken.GetComponent<TokenMoveController>();
-        tokenMoveController.StartMoveToPosition(selectedTile.transform.position);
+
+        GameObject tokenAtTile = GameTileSelection.instance.GetTokenAtPosition(selectedTile.transform.position, "Player");
+        if (tokenAtTile != null) { tokenMoveController.StartMoveToPosition(selectedTile.transform.position, tokenAtTile, resetClockAfterMove: true); }
+        else { tokenMoveController.StartMoveToPosition(selectedTile.transform.position, resetClockAfterMove: true); }
 
         // Tear down
-        selectedTokenScaler.ScaleDown(tokenScaleSpeed);
         isSelecting = false;
-        isEnemyTurn = false;
-        SelectionManager.instance.ResetClock();
-    }
-
-    private IEnumerator SetPlayerTurnDelayed() {
-        yield return new WaitForSeconds(0.5f * SelectionManager.instance.timePerTurn);
-        GameTokenSelection.instance.isPlayerTurn = true;
-        GameTileSelection.instance.isPlayerTurn = true;
-        GameTileSelection.instance.sameTurn = false;
     }
 }

@@ -1,12 +1,15 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class TokenMoveController : MonoBehaviour
 {
     [SerializeField] public float moveDuration = 0.5f;
+    [SerializeField] public GameObject captureParticlePrefab;
+    [SerializeField] public Color particleColor;
     private ScaleObject scaleObject;
     private SpriteRenderer spriteRenderer;
-    private bool isMoving;
+    [HideInInspector] public bool isMoving;
     private void Start()
     {
         scaleObject = GetComponent<ScaleObject>();
@@ -19,8 +22,7 @@ public class TokenMoveController : MonoBehaviour
     /// <param name="targetPosition"></param>
     /// <param name="moveDuration"></param>
     /// <returns></returns>
-    private IEnumerator MoveToPosition(Vector3 targetPosition, float moveDuration)
-    {
+    private IEnumerator MoveToPosition(Vector3 targetPosition, float moveDuration, GameObject tokenAtPosition, bool resetClockAfterMove) {
         // Skip if already moving
         if (isMoving) { yield break; }
 
@@ -32,20 +34,37 @@ public class TokenMoveController : MonoBehaviour
         spriteRenderer.sortingOrder = 3;
 
         // Lerp to position over moveDuration seconds
-        while (elapsedTime < moveDuration)
-        {
+        while (elapsedTime < moveDuration) {
             float t = elapsedTime / moveDuration;
             transform.position = Vector3.Lerp(startPosition, targetPosition, t);
 
             elapsedTime += Time.deltaTime;
             yield return null;
         }
+        transform.position = targetPosition;
+
+        // Detroy tile at position if it exists
+        if (tokenAtPosition != null) {
+            GameObject particleInstance = Instantiate(captureParticlePrefab, transform.position, Quaternion.identity);
+            ParticleSystem particleSystem = particleInstance.GetComponent<ParticleSystem>();
+            
+            // Set the particle color
+            ParticleSystem.MainModule mainModule = particleSystem.main;
+            mainModule.startColor = particleColor;
+            
+            // Play the particle effect
+            particleSystem.Play();
+            tokenAtPosition.SetActive(false);
+        }
 
         // Tear down movement
-        transform.position = targetPosition;
+        
         isMoving = false;
         scaleObject.ScaleDown(0.1f);
         spriteRenderer.sortingOrder = 2;
+        if(resetClockAfterMove) {
+            SelectionManager.instance.ResetClock();
+        }
     }
 
     /// <summary>
@@ -53,8 +72,8 @@ public class TokenMoveController : MonoBehaviour
     /// </summary>
     /// <param name="targetPosition"></param>
     /// <param name="moveDuration"></param>
-    public void StartMoveToPosition(Vector3 targetPosition)
+    public void StartMoveToPosition(Vector3 targetPosition, GameObject tokenAtPosition = null, bool resetClockAfterMove = false)
     {
-        StartCoroutine(MoveToPosition(targetPosition, moveDuration));
+        StartCoroutine(MoveToPosition(targetPosition, moveDuration, tokenAtPosition, resetClockAfterMove));
     }
 }

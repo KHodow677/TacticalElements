@@ -43,8 +43,7 @@ public class EnemyDraftSelection : MonoBehaviour
     /// Switches between selecting and not selecting tokens.
     /// </summary>
     public void SwitchStates() {
-        if (isSelecting) { SelectionManager.instance.ResetClock();}
-        else if (isEnemyTurn) { StartCoroutine(SelectToken()); }
+        if (isEnemyTurn) { StartCoroutine(SelectToken()); }
     }
 
     public IEnumerator SelectToken()
@@ -53,7 +52,7 @@ public class EnemyDraftSelection : MonoBehaviour
         yield return new WaitForSeconds(timePerTurn);
 
         // Set up
-        selectedTokenScaler = tokenScalers[UnityEngine.Random.Range(0, tokens.Count)];
+        selectedTokenScaler = GetRandomElementWithBias(tokenScalers);
         selectedTile = tiles[UnityEngine.Random.Range(0, tiles.Count)];
         selectedToken = selectedTokenScaler.gameObject;
         selectedTokenScaler.ScaleUp(tokenScaleSpeed);
@@ -87,5 +86,39 @@ public class EnemyDraftSelection : MonoBehaviour
         DraftTileSelection.instance.isPlayerTurn = true;
         DraftTileSelection.instance.sameTurn = false;
         SelectionManager.instance.ResetClock();
+    }
+
+    private T GetRandomElementWithBias<T>(List<T> list)
+    {
+        // Calculate weights based on the element index
+        float[] weights = new float[list.Count];
+        for (int i = 0; i < list.Count; i++)
+        {
+            weights[i] = (i + 1) * (i + 1); // You can adjust the weight calculation as per your desired bias
+        }
+
+        // Calculate the total weight
+        float totalWeight = 0f;
+        for (int i = 0; i < list.Count; i++)
+        {
+            totalWeight += weights[i];
+        }
+
+        // Generate a random value between 0 and the total weight
+        float randomValue = UnityEngine.Random.Range(0f, totalWeight);
+
+        // Iterate through the list and select an element based on the random value
+        float weightSum = 0f;
+        for (int i = 0; i < list.Count; i++)
+        {
+            weightSum += weights[i];
+            if (randomValue <= weightSum)
+            {
+                return list[i];
+            }
+        }
+
+        // Return the last element if no selection was made (shouldn't happen in this case)
+        return list[list.Count - 1];
     }
 }

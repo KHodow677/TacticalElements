@@ -3,10 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SelectionManager : MonoBehaviour {
     private static SelectionManager _instance;
     public static SelectionManager instance { get { return _instance; } }
+
+    [SerializeField] private SceneFader sceneFader;
     
     [SerializeField] public float timePerTurn;
     [SerializeField] public float spaceHoldTimeToQuit;

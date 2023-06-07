@@ -64,6 +64,8 @@ public class GameTileSelection : MonoBehaviour {
         // Remove listener to spacePressed event
         SelectionManager.instance.spacePressed -= OnSpacePressed;
 
+        GameTokenSelection.instance.HandleDisplayToken(false);
+
         // Unhighlight and untarget all selectable tiles
         foreach (ToggleIndicators tileIndicator in tileIndicators) {
             tileIndicator.ToggleHighlight(false);
@@ -74,12 +76,10 @@ public class GameTileSelection : MonoBehaviour {
         selectedTile = selectedTileScaler.gameObject;
         GameObject selectedTokenObject = GameTokenSelection.instance.selectedToken;
         TokenMoveController tokenMoveController = selectedTokenObject.GetComponent<TokenMoveController>();
-        tokenMoveController.StartMoveToPosition(selectedTile.transform.position);
 
-        // Remove selected token from lists
-        tiles.Remove(selectedTile);
-        tileScalers.Remove(selectedTileScaler);
-        tileIndicators.Remove(selectedTile.GetComponent<ToggleIndicators>());
+        GameObject tokenAtTile = GetTokenAtPosition(selectedTile.transform.position, "Enemy");
+        if (tokenAtTile != null) { tokenMoveController.StartMoveToPosition(selectedTile.transform.position, tokenAtTile); }
+        else { tokenMoveController.StartMoveToPosition(selectedTile.transform.position); }
 
         // Tear down
         selectedTileScaler.ScaleDown(tileScaleSpeed);
@@ -92,7 +92,21 @@ public class GameTileSelection : MonoBehaviour {
             yield return null;
         }
         GameObject selectedToken = GameTokenSelection.instance.selectedToken;
-        tiles = GetAvailableTiles(selectedToken);
+        tiles = GetAvailableTiles(selectedToken, "Player");
+
+        // Sort tokens by their transform position
+        tiles.Sort((obj1, obj2) =>
+        {
+            Vector3 pos1 = obj1.transform.position;
+            Vector3 pos2 = obj2.transform.position;
+
+            // Sort by ascending transform.position.y
+            int yComparison = pos1.y.CompareTo(pos2.y);
+            if (yComparison != 0) { return yComparison; }
+
+            // For objects with the same transform.position.y, sort by ascending transform.position.x
+            return pos1.x.CompareTo(pos2.x);
+        });
 
         // Set up scaling components of tokens
         tileScalers = new List<ScaleObject>();
@@ -145,19 +159,32 @@ public class GameTileSelection : MonoBehaviour {
         return null;
     }
 
-    public List<GameObject> GetAvailableTiles( GameObject token) {
+    public List<GameObject> GetAvailableTiles( GameObject token, string side) {
         List<GameObject> availableTiles = new List<GameObject>();
         TokenMoveOptions moveOptions = token.GetComponent<TokenMoveOptions>();
         foreach (Vector3 moveOffset in moveOptions.moveOffsetOptions) {
             Vector3 tilePosition = token.transform.position + moveOffset;
-            GameObject tokenObject = GetTokenAtPosition(tilePosition, "Player");
+            GameObject tokenObject = GetTokenAtPosition(tilePosition, side);
             if (tokenObject != null) { continue; }
             GameObject tileObject = GetTileAtPosition(tilePosition);
             if (tileObject == null) { continue; }
-            Debug.Log(moveOffset);
             availableTiles.Add(tileObject);
         }
         return availableTiles;
+    }
+
+    public void HighlightAvailableTiles(GameObject token, string side) {
+        List<GameObject> availableTiles = GetAvailableTiles(token, side);
+        foreach (GameObject tile in availableTiles) {
+            tile.GetComponent<ToggleIndicators>().ToggleHighlight(true);
+        }
+    }
+
+    public void UnhighlightAvailableTiles(GameObject token, string side) {
+        List<GameObject> availableTiles = GetAvailableTiles(token, side);
+        foreach (GameObject tile in availableTiles) {
+            tile.GetComponent<ToggleIndicators>().ToggleHighlight(false);
+        }
     }
 
     /// <summary>
