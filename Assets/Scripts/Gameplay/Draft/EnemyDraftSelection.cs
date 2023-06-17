@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class EnemyDraftSelection : MonoBehaviour
 {
-    private static EnemyDraftSelection _instance;
-    public static EnemyDraftSelection instance { get { return _instance; } }
+    [SerializeField] private DraftTokenSelection draftTokenSelection;
+    [SerializeField] private DraftTileSelection draftTileSelection;
 
     [SerializeField] private float timePerTurn;
     [HideInInspector] public bool isSelecting;
@@ -20,16 +21,6 @@ public class EnemyDraftSelection : MonoBehaviour
     [HideInInspector] public GameObject selectedToken;
     [HideInInspector] public GameObject selectedTile;
 
-    private void Awake()
-    {
-        // Ensure only one instance of the class exists
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-        else { _instance = this; }
-    }
     private void Start(){
         // Set up scaling components of tokens
         tokenScalers = new List<ScaleObject>();
@@ -43,13 +34,14 @@ public class EnemyDraftSelection : MonoBehaviour
     /// Switches between selecting and not selecting tokens.
     /// </summary>
     public void SwitchStates() {
-        if (isEnemyTurn) { StartCoroutine(SelectToken()); }
+        if (isEnemyTurn) { SelectToken(); }
     }
 
-    public IEnumerator SelectToken()
+    public async void SelectToken()
     {
         SelectionManager.instance.PauseClock();
-        yield return new WaitForSeconds(timePerTurn);
+        int delayMilliseconds = (int)(timePerTurn * 1000);
+        await Task.Delay(delayMilliseconds);
 
         // Set up
         selectedTokenScaler = GetRandomElementWithBias(tokenScalers);
@@ -70,23 +62,25 @@ public class EnemyDraftSelection : MonoBehaviour
         tokens.Remove(selectedToken);
         tokenScalers.Remove(selectedTokenScaler);
         tiles.Remove(selectedTile);
-        DraftTokenSelection playerDraftManager = DraftTokenSelection.instance;
+        DraftTokenSelection playerDraftManager = draftTokenSelection;
         playerDraftManager.tokens.Remove(selectedToken);
         playerDraftManager.tokenScalers.Remove(selectedTokenScaler);
         playerDraftManager.tokenStates.Remove(selectedToken.GetComponent<TokenState>());
 
-        yield return new WaitForSeconds(moveController.moveDuration);
+        delayMilliseconds = (int)(moveController.moveDuration * 1000);
+        await Task.Delay(delayMilliseconds);
         SelectionManager.instance.UnpauseClock();
 
         // Tear down
         selectedTokenScaler.ScaleDown(tokenScaleSpeed);
         isSelecting = false;
         isEnemyTurn = false;
-        DraftTokenSelection.instance.isPlayerTurn = true;
-        DraftTileSelection.instance.isPlayerTurn = true;
-        DraftTileSelection.instance.sameTurn = false;
+        draftTokenSelection.isPlayerTurn = true;
+        draftTileSelection.isPlayerTurn = true;
+        draftTileSelection.sameTurn = false;
         SelectionManager.instance.ResetClock();
     }
+
 
     private T GetRandomElementWithBias<T>(List<T> list)
     {

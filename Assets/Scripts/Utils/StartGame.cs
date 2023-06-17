@@ -10,7 +10,7 @@ public class StartGame : MonoBehaviour
     {
         // Check if the space key is pressed
         if (Input.GetKeyDown(KeyCode.Space)) {
-            StartCoroutine(sceneFader.FadeAndLoadScene(SceneFader.FadeDirection.In, "Game Scene"));
+            StartCoroutine(sceneFader.FadeAndLoadScene(SceneFader.FadeDirection.In, "Main Game Scene"));
         }
     }
 }

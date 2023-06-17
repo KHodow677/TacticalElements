@@ -131,7 +131,7 @@ public class GameTileSelection : MonoBehaviour {
         // Set up enemy turn
         StartCoroutine(SetEnemyTurnDelayed());
         GameTokenSelection.instance.isPlayerTurn = false;
-        EnemyDraftSelection.instance.isEnemyTurn = true;
+        EnemyGameSelection.instance.isEnemyTurn = true;
         isPlayerTurn = false;
         sameTurn = false;
     }

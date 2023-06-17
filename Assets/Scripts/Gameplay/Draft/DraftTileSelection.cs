@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class DraftTileSelection : MonoBehaviour {
-    private static DraftTileSelection _instance;
-    public static DraftTileSelection instance { get { return _instance; } }
+
+    [SerializeField] private DraftTokenSelection draftTokenSelection;
+    [SerializeField] private EnemyDraftSelection enemyDraftSelection;
+
     [HideInInspector] public bool isSelecting;
     [HideInInspector] public bool sameTurn;
     [HideInInspector] public bool isPlayerTurn = true;
@@ -16,14 +19,6 @@ public class DraftTileSelection : MonoBehaviour {
     private ToggleIndicators selectedTileIndicator;
     [HideInInspector] public GameObject selectedTile;
 
-    private void Awake() {
-        // Ensure only one instance of the class exists
-        if (_instance != null && _instance != this) {
-            Destroy(this.gameObject);
-            return;
-        }
-        else { _instance = this; }
-    }
     private void Start() {
         // Set up scaling components of tokens
         tileScalers = new List<ScaleObject>();
@@ -64,8 +59,8 @@ public class DraftTileSelection : MonoBehaviour {
         isSelecting = true;
 
         // Set up enemy turn
-        StartCoroutine(SetEnemyTurnDelayed());
-        DraftTokenSelection.instance.isPlayerTurn = false;
+        SetEnemyTurnDelayed();
+        draftTokenSelection.isPlayerTurn = false;
         isPlayerTurn = false;
         sameTurn = false;
     }
@@ -78,7 +73,7 @@ public class DraftTileSelection : MonoBehaviour {
         // Remove listener to spacePressed event
         SelectionManager.instance.spacePressed -= OnSpacePressed;
 
-        DraftTokenSelection.instance.HandleDisplayToken(false);
+        draftTokenSelection.HandleDisplayToken(false);
 
         // Unhighlight and untarget all selectable tiles
         foreach (ToggleIndicators tileIndicator in tileIndicators) {
@@ -88,7 +83,7 @@ public class DraftTileSelection : MonoBehaviour {
 
         // Set selected tile
         selectedTile = selectedTileScaler.gameObject;
-        GameObject selectedTokenObject = DraftTokenSelection.instance.selectedToken;
+        GameObject selectedTokenObject = draftTokenSelection.selectedToken;
         TokenMoveController tokenMoveController = selectedTokenObject.GetComponent<TokenMoveController>();
         tokenMoveController.StartMoveToPosition(selectedTile.transform.position);
         TokenMoveOptions tokenMoveOptions = selectedTokenObject.GetComponent<TokenMoveOptions>();
@@ -104,9 +99,9 @@ public class DraftTileSelection : MonoBehaviour {
         isSelecting = false;
     }
 
-    private IEnumerator SetEnemyTurnDelayed() {
-        yield return new WaitForSeconds(0.5f * SelectionManager.instance.timePerTurn);
-        EnemyDraftSelection.instance.isEnemyTurn = true;
+    private async void SetEnemyTurnDelayed() {
+        await Task.Delay((int)(0.5f * SelectionManager.instance.timePerTurn * 1000));
+        enemyDraftSelection.isEnemyTurn = true;
     }
 
     /// <summary>

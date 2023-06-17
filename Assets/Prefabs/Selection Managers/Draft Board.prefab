@@ -78,7 +78,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -700, y: 180}
+  m_AnchoredPosition: {x: -700, y: 300}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2432845530954208536
@@ -239,6 +239,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isSelecting: 0
   isPlayerTurn: 1
+  tokenDisplayObject: {fileID: 0}
   tokenScaleSpeed: 0.1
   playerTokenParent: {fileID: 0}
   tokens:
@@ -269,7 +270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 085f01401e3cd6642853a2daa17dbca9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timePerTurn: 1.5
+  timePerTurn: 1
   isSelecting: 0
   isEnemyTurn: 0
   tokenScaleSpeed: 0.1
@@ -319,7 +320,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2432845531397431785
 RectTransform:
   m_ObjectHideFlags: 0
@@ -360,7 +361,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: -765493639
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &2432845531397431799
 MonoBehaviour:
@@ -1493,6 +1494,26 @@ PrefabInstance:
     - target: {fileID: 468517399109949624, guid: 0d86a187a7c4d3440ab5eab659f5344b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1797253557286574215, guid: 0d86a187a7c4d3440ab5eab659f5344b, type: 3}
+      propertyPath: moveOffsetOptions.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1797253557286574215, guid: 0d86a187a7c4d3440ab5eab659f5344b, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[0].y
+      value: 3.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1797253557286574215, guid: 0d86a187a7c4d3440ab5eab659f5344b, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[1].y
+      value: 1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1797253557286574215, guid: 0d86a187a7c4d3440ab5eab659f5344b, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[2].y
+      value: -1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1797253557286574215, guid: 0d86a187a7c4d3440ab5eab659f5344b, type: 3}
+      propertyPath: moveOffsetOptions.Array.data[3].y
+      value: -3.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0d86a187a7c4d3440ab5eab659f5344b, type: 3}

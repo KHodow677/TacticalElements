@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 
 public class DraftTokenSelection : MonoBehaviour {
-    private static DraftTokenSelection _instance;
-    public static DraftTokenSelection instance { get { return _instance; } }
+
+    [SerializeField] private DraftTileSelection draftTileSelection;
+    [SerializeField] private EnemyDraftSelection enemyDraftSelection;
+
     [HideInInspector] public bool isSelecting;
     [HideInInspector] public bool isPlayerTurn = true;
     [SerializeField] private GameObject tokenDisplayObject;
@@ -17,14 +20,6 @@ public class DraftTokenSelection : MonoBehaviour {
     private TokenState selectedTokenState;
     [HideInInspector] public GameObject selectedToken;
 
-    private void Awake() {
-        // Ensure only one instance of the class exists
-        if (_instance != null && _instance != this) {
-            Destroy(this.gameObject);
-            return;
-        }
-        else { _instance = this; }
-    }
     private void Start() {
         // Set up scaling and state components of tokens
         tokenScalers = new List<ScaleObject>();
@@ -46,7 +41,7 @@ public class DraftTokenSelection : MonoBehaviour {
     }
 
     /// <summary>
-    /// Activates token selection.
+    /// Activates token selection
     /// </summary>
     /// <param name="initialTileScaleSpeed">Initial scaling speed of token</param>
     private void ActivateTokenSelection() {
@@ -57,8 +52,8 @@ public class DraftTokenSelection : MonoBehaviour {
             // End draft and tear down
             SelectionManager.instance.spacePressed -= OnSpacePressed;
             SelectionManager.instance.timeUp -= SwitchStates;
-            SelectionManager.instance.timeUp -= DraftTileSelection.instance.SwitchStates;
-            SelectionManager.instance.timeUp -= EnemyDraftSelection.instance.SwitchStates;
+            SelectionManager.instance.timeUp -= draftTileSelection.SwitchStates;
+            SelectionManager.instance.timeUp -= enemyDraftSelection.SwitchStates;
             SelectionManager.instance.PauseClock();
             SelectionManager.instance.gameMode = SelectionManager.GameMode.Gameplay;
             return;
@@ -70,7 +65,7 @@ public class DraftTokenSelection : MonoBehaviour {
         selectedTokenScaler.ScaleUp(tokenScaleSpeed);
         selectedTokenState.SetPlayerOwned();
         HandleDisplayToken(true);
-        StartCoroutine(SetSameTurnDelayed());
+        SetSameTurnDelayed();
         isSelecting = true;
     }
 
@@ -93,7 +88,6 @@ public class DraftTokenSelection : MonoBehaviour {
         tokens.Remove(selectedToken);
         tokenScalers.Remove(selectedTokenScaler);
         tokenStates.Remove(selectedTokenState);
-        EnemyDraftSelection enemyDraftSelection = EnemyDraftSelection.instance;
         enemyDraftSelection.tokens.Remove(selectedToken);
         enemyDraftSelection.tokenScalers.Remove(selectedTokenScaler);
 
@@ -102,13 +96,14 @@ public class DraftTokenSelection : MonoBehaviour {
         isSelecting = false;
     }
 
-    private IEnumerator SetSameTurnDelayed() {
-        yield return new WaitForSeconds(0.5f * SelectionManager.instance.timePerTurn);
-        DraftTileSelection.instance.sameTurn = true;
+    private async void SetSameTurnDelayed() {
+        await Task.Delay((int)(0.5f * SelectionManager.instance.timePerTurn * 1000));
+        draftTileSelection.sameTurn = true;
     }
 
-    private IEnumerator SetInactiveDelayed(GameObject obj) {
-        yield return new WaitForSeconds(tokenScaleSpeed);
+    private async void SetInactiveDelayed(GameObject obj)
+    {
+        await Task.Delay((int)(tokenScaleSpeed * 1000));
         obj.SetActive(false);
     }
 
@@ -122,7 +117,7 @@ public class DraftTokenSelection : MonoBehaviour {
         }
         tokenDisplay.GetComponent<ScaleObject>().ScaleDown(tokenScaleSpeed);
         tokenDisplay.transform.GetChild(tokenDisplay.transform.childCount - 1).GetChild(0).gameObject.SetActive(false);
-        StartCoroutine(SetInactiveDelayed(tokenDisplay));
+        SetInactiveDelayed(tokenDisplay);
     }
 
     /// <summary>
