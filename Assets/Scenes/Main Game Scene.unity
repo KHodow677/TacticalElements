@@ -6216,6 +6216,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b11316bd65cdcb469c58f11db616463, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameTokenSelection: {fileID: 1345751727}
+  enemyGameSelection: {fileID: 1652425199}
   isSelecting: 0
   sameTurn: 0
   isPlayerTurn: 1
@@ -6259,6 +6261,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b431817a05900b4d826bbfe3fc26c31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameTileSelection: {fileID: 1345751726}
+  enemyGameSelection: {fileID: 1652425199}
   tokenDisplayObject: {fileID: 415475970}
   sceneFader: {fileID: 5697054617648365799}
   isSelecting: 0
@@ -7654,6 +7658,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5c7bb47ae641614292f5bcffd02b98f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameTokenSelection: {fileID: 1345751727}
+  gameTileSelection: {fileID: 1345751726}
   sceneFader: {fileID: 5697054617648365799}
   timePerTurn: 1
   isSelecting: 0
@@ -9711,7 +9717,7 @@ PrefabInstance:
       objectReference: {fileID: 5697054617648365799}
     - target: {fileID: 3576825087567514200, guid: 9e97087efaccdd243951b32b79483105, type: 3}
       propertyPath: timePerTurn
-      value: 10
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3576825087567514200, guid: 9e97087efaccdd243951b32b79483105, type: 3}
       propertyPath: spaceHoldTimeToQuit
