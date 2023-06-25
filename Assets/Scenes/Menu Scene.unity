@@ -220,10 +220,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneFader: {fileID: 2012743278}
+  tokenDisplayObject: {fileID: 0}
+  scaleSpeed: 0
   timePerTurn: 10
   spaceHoldTimeToQuit: 3
   timeLeft: 0
   gameMode: 0
+  selectionMode: 0
+  playerTurn: 0
   isGameplay: 0
 --- !u!4 &136241064
 Transform:
@@ -479,7 +483,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1275417032566718196, guid: b6ecc1060855c854d9c49380793a205d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b6ecc1060855c854d9c49380793a205d, type: 3}
 --- !u!114 &505729735 stripped
 MonoBehaviour:
@@ -910,9 +915,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Press SPACE
-
-    Hold SPACE to Quit'
+  m_text: CLICK Anywhere
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: da8c3548652df994e96a95721d6c1c17, type: 2}
   m_sharedMaterial: {fileID: 2219309605284079523, guid: da8c3548652df994e96a95721d6c1c17, type: 2}
@@ -1721,7 +1724,8 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2788544097329944163, guid: b0a09e298bd272d40ae46313444df3c7, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b0a09e298bd272d40ae46313444df3c7, type: 3}
 --- !u!114 &1487323318 stripped
 MonoBehaviour:
@@ -1926,7 +1930,8 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6003174350527192517, guid: 6d71f4910d9e8094d9658e1fe13b68bf, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 6d71f4910d9e8094d9658e1fe13b68bf, type: 3}
 --- !u!114 &1885932256 stripped
 MonoBehaviour:
@@ -2003,7 +2008,8 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2399828239778012994, guid: adb5359c0128af54c8dc087cd99db281, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: adb5359c0128af54c8dc087cd99db281, type: 3}
 --- !u!114 &1965143881 stripped
 MonoBehaviour:
@@ -2091,7 +2097,8 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3707566455851235044, guid: 6a68f6b166ba91343afc3ac116eaf73e, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 6a68f6b166ba91343afc3ac116eaf73e, type: 3}
 --- !u!114 &2050629467 stripped
 MonoBehaviour:

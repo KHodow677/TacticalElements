@@ -1,7 +1,9 @@
+using Newtonsoft.Json.Bson;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,22 +12,34 @@ public class SelectionManager : MonoBehaviour {
     public static SelectionManager instance { get { return _instance; } }
 
     [SerializeField] private SceneFader sceneFader;
-    
+    [SerializeField] private GameObject tokenDisplayObject;
+    [SerializeField] private float scaleSpeed;
+
     [SerializeField] public float timePerTurn;
     [SerializeField] public float spaceHoldTimeToQuit;
     [SerializeField] public float timeLeft;
 
     public enum GameMode { Draft, Gameplay, GameOver};
+    public enum SelectionMode { Token, Tile };
+    public enum PlayerTurn { Player1, Player2 }
     [HideInInspector] public GameMode gameMode = GameMode.Draft;
+    [HideInInspector] public SelectionMode selectionMode = SelectionMode.Token;
+    [HideInInspector] public PlayerTurn playerTurn = PlayerTurn.Player1;
     [HideInInspector] public bool isGameplay;
+
     // Events
-    public delegate void KeyPressed();
+    public delegate void ObjSelected(GameObject token);
     public delegate void TimeUp();
     public delegate void GameModeChanged();
-    public event KeyPressed spacePressed;
+
+    public event ObjSelected tokenClicked;
+    public event ObjSelected tileClicked;
+    public event ObjSelected tokenHovered;
+    public event ObjSelected tokenUnhovered;
     public event TimeUp timeUp;
     public event GameModeChanged gameModeChanged;
     private bool clockPaused;
+    private GameObject selectedToken;
 
     private void Awake() {
         // Ensure only one instance of the class exists
@@ -37,32 +51,103 @@ public class SelectionManager : MonoBehaviour {
         timeLeft = timePerTurn;
     }
 
-    private void Start() {
-        // Add listener to spacePressed event
-        spacePressed += OnSpaceHold;
-    }
-
     private void Update() {
         // Call events to subscribers if conditions are met
-        if (Input.GetKeyDown(KeyCode.Space)) { spacePressed?.Invoke(); }
         if (timeLeft <= 0) { timeUp?.Invoke(); timeLeft = timePerTurn; }
         if (!isGameplay && gameMode == GameMode.Gameplay) { gameModeChanged?.Invoke(); isGameplay = true; }
 
         if (clockPaused) { return; }
         timeLeft -= Time.deltaTime;
     }
-    private void OnSpaceHold() {
-        StartCoroutine(OnSpaceHoldQuit());
+
+    public void OnTokenSelect(GameObject token)
+    {
+        if (selectionMode != SelectionMode.Token) { return; }
+        ScaleObject tokenScaler = token.GetComponent<ScaleObject>();
+        TokenState tokenState = token.GetComponent<TokenState>();
+
+        tokenScaler.ScaleUp(scaleSpeed);
+        tokenState.SetPlayerOwned();
+        HandleDisplayToken(true, token);
+        tokenHovered?.Invoke(token);
     }
-    private IEnumerator OnSpaceHoldQuit() {
-        float time = Time.time;
-        while (Time.time - time < spaceHoldTimeToQuit) {
-            if (!Input.GetKey(KeyCode.Space)) { yield break; }
-            yield return null;
+
+    public void OnTokenDeselect(GameObject token)
+    {
+        if (selectionMode != SelectionMode.Token) { return; }
+        ScaleObject tokenScaler = token.GetComponent<ScaleObject>();
+        TokenState tokenState = token.GetComponent<TokenState>();
+
+        tokenScaler.ScaleDown(scaleSpeed);
+        tokenState.UnsetPlayerOwned();
+        HandleDisplayToken(false, token);
+        tokenUnhovered?.Invoke(token);
+    }
+
+    public void OnTokenClicked(GameObject token)
+    {
+        if (selectionMode != SelectionMode.Token) { return; }
+        if (playerTurn != PlayerTurn.Player1) { return; }
+        tokenClicked?.Invoke(token);
+    }
+
+    public void OnTileSelect(GameObject tile)
+    {
+        if (selectionMode != SelectionMode.Tile) { return; }
+        ScaleObject tileScaler = tile.GetComponent<ScaleObject>();
+        ToggleIndicators tileIndicator = tile.GetComponent<ToggleIndicators>();
+
+        tileScaler.ScaleUp(scaleSpeed);
+        tileIndicator.ToggleTarget(true);        
+    }
+
+    public void OnTileDeselect(GameObject tile)
+    {
+        if (selectionMode != SelectionMode.Tile) { return; }
+        ScaleObject tileScaler = tile.GetComponent<ScaleObject>();
+        ToggleIndicators tileIndicator = tile.GetComponent<ToggleIndicators>();
+
+        tileScaler.ScaleDown(scaleSpeed);
+        tileIndicator.ToggleTarget(false);
+    }
+
+    public void OnTileClicked(GameObject tile)
+    {
+        if (selectionMode != SelectionMode.Tile) { return; }
+        tileClicked?.Invoke(tile);
+    }
+    public void SetSelectedToken(GameObject token)
+    {
+        selectedToken = token;
+    }
+
+    public void ClearSelectedToken()
+    {
+        OnTokenDeselect(selectedToken);
+        selectedToken = null;
+    }
+
+    private void HandleDisplayToken(bool isActivating, GameObject token)
+    {
+        GameObject tokenDisplay = tokenDisplayObject.transform.Find(token.gameObject.name).gameObject;
+
+        if (isActivating)
+        {
+            tokenDisplay.SetActive(true);
+            tokenDisplay.transform.GetChild(tokenDisplay.transform.childCount - 1).GetChild(0).gameObject.SetActive(true);
+            tokenDisplay.GetComponent<ScaleObject>().ScaleUp(scaleSpeed);
         }
-        // Replace this with return to main menu!
-        Debug.Log("Quitting");
-        Application.Quit();
+        else
+        {
+            tokenDisplay.GetComponent<ScaleObject>().ScaleDown(scaleSpeed);
+            tokenDisplay.transform.GetChild(tokenDisplay.transform.childCount - 1).GetChild(0).gameObject.SetActive(false);
+            SetInactiveDelayed(tokenDisplay);
+        }
+    }
+    private async void SetInactiveDelayed(GameObject obj)
+    {
+        await Task.Delay((int)(scaleSpeed * 1000));
+        obj.SetActive(false);
     }
 
     public void ForceTimeUp(){
@@ -76,10 +161,6 @@ public class SelectionManager : MonoBehaviour {
     }
     public void UnpauseClock(){
         clockPaused = false;
-    }
-    public void ResetClock(){
-        timeLeft = timePerTurn;
-        timeUp?.Invoke();
     }
 
     public void CheckSubscribers(){

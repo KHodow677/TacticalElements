@@ -1272,7 +1272,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press SPACE
+  m_text: CLICK Anywhere
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: da8c3548652df994e96a95721d6c1c17, type: 2}
   m_sharedMaterial: {fileID: 2219309605284079523, guid: da8c3548652df994e96a95721d6c1c17, type: 2}

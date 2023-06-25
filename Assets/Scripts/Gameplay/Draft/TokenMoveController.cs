@@ -22,7 +22,7 @@ public class TokenMoveController : MonoBehaviour
     /// <param name="targetPosition"></param>
     /// <param name="moveDuration"></param>
     /// <returns></returns>
-    private IEnumerator MoveToPosition(Vector3 targetPosition, float moveDuration, GameObject tokenAtPosition, bool resetClockAfterMove) {
+    private IEnumerator MoveToPosition(Vector3 targetPosition, float moveDuration, GameObject tokenAtPosition) {
         // Skip if already moving
         if (isMoving) { yield break; }
 
@@ -62,9 +62,6 @@ public class TokenMoveController : MonoBehaviour
         isMoving = false;
         scaleObject.ScaleDown(0.1f);
         spriteRenderer.sortingOrder = 2;
-        if(resetClockAfterMove) {
-            SelectionManager.instance.ResetClock();
-        }
     }
 
     /// <summary>
@@ -72,8 +69,8 @@ public class TokenMoveController : MonoBehaviour
     /// </summary>
     /// <param name="targetPosition"></param>
     /// <param name="moveDuration"></param>
-    public void StartMoveToPosition(Vector3 targetPosition, GameObject tokenAtPosition = null, bool resetClockAfterMove = false)
+    public void StartMoveToPosition(Vector3 targetPosition, GameObject tokenAtPosition = null)
     {
-        StartCoroutine(MoveToPosition(targetPosition, moveDuration, tokenAtPosition, resetClockAfterMove));
+        StartCoroutine(MoveToPosition(targetPosition, moveDuration, tokenAtPosition));
     }
 }

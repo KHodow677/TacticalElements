@@ -16,28 +16,10 @@ public class DraftTokenSelection : MonoBehaviour
     [HideInInspector] public bool isPlayerTurn = true;
     [HideInInspector] public GameObject selectedToken;
 
-    [HideInInspector] public List<ScaleObject> tokenScalers;
-    [HideInInspector] public List<TokenState> tokenStates;
-    private ScaleObject selectedTokenScaler;
-    private TokenState selectedTokenState; 
-
     private void Start()
     {
-        InitializeTokenLists();
         ActivateTokenSelection();
         SelectionManager.instance.timeUp += SwitchStates;
-    }
-
-    private void InitializeTokenLists()
-    {
-        tokenScalers = new List<ScaleObject>();
-        tokenStates = new List<TokenState>();
-
-        foreach (var token in tokens)
-        {
-            tokenScalers.Add(token.GetComponent<ScaleObject>());
-            tokenStates.Add(token.GetComponent<TokenState>());
-        }
     }
 
     public void SwitchStates()
@@ -54,7 +36,7 @@ public class DraftTokenSelection : MonoBehaviour
 
     private void ActivateTokenSelection()
     {
-        SelectionManager.instance.spacePressed += OnSpacePressed;
+        SelectionManager.instance.tokenClicked += OnTokenClicked;
 
         if (tokens.Count == 0)
         {
@@ -62,86 +44,49 @@ public class DraftTokenSelection : MonoBehaviour
             return;
         }
 
-        selectedTokenScaler = tokenScalers[0];
-        selectedTokenState = tokenStates[0];
-        selectedTokenScaler.ScaleUp(tokenScaleSpeed);
-        selectedTokenState.SetPlayerOwned();
-        HandleDisplayToken(true);
-        SetSameTurnDelayed();
+        SetSameTurnDelayed(0.1f);
         isSelecting = true;
     }
 
     private void EndDraft()
     {
-        SelectionManager.instance.spacePressed -= OnSpacePressed;
-        SelectionManager.instance.timeUp -= SwitchStates;
-        SelectionManager.instance.timeUp -= draftTileSelection.SwitchStates;
-        SelectionManager.instance.timeUp -= enemyDraftSelection.SwitchStates;
-        SelectionManager.instance.PauseClock();
-        SelectionManager.instance.gameMode = SelectionManager.GameMode.Gameplay;
+        SelectionManager selectionManager = SelectionManager.instance;
+        selectionManager.tokenClicked -= OnTokenClicked;
+        selectionManager.timeUp -= SwitchStates;
+        selectionManager.timeUp -= draftTileSelection.SwitchStates;
+        selectionManager.timeUp -= enemyDraftSelection.SwitchStates;
+        selectionManager.PauseClock();
+        selectionManager.gameMode = SelectionManager.GameMode.Gameplay;
     }
 
-    private async void SetSameTurnDelayed()
+    private async void SetSameTurnDelayed(float delaySeconds)
     {
-        await Task.Delay((int)(0.5f * SelectionManager.instance.timePerTurn * 1000));
+        await Task.Delay((int)(delaySeconds * 1000));
         draftTileSelection.sameTurn = true;
-    }
-
-    private async void SetInactiveDelayed(GameObject obj)
-    {
-        await Task.Delay((int)(tokenScaleSpeed * 1000));
-        obj.SetActive(false);
-    }
-
-    public void HandleDisplayToken(bool isActivating)
-    {
-        GameObject tokenDisplay = tokenDisplayObject.transform.Find(selectedTokenScaler.gameObject.name).gameObject;
-
-        if (isActivating)
-        {
-            tokenDisplay.SetActive(true);
-            tokenDisplay.transform.GetChild(tokenDisplay.transform.childCount - 1).GetChild(0).gameObject.SetActive(true);
-            tokenDisplay.GetComponent<ScaleObject>().ScaleUp(tokenScaleSpeed);
-        }
-        else
-        {
-            tokenDisplay.GetComponent<ScaleObject>().ScaleDown(tokenScaleSpeed);
-            tokenDisplay.transform.GetChild(tokenDisplay.transform.childCount - 1).GetChild(0).gameObject.SetActive(false);
-            SetInactiveDelayed(tokenDisplay);
-        }
     }
 
     private void DeactivateTokenSelection()
     {
-        SelectionManager.instance.spacePressed -= OnSpacePressed;
-        selectedToken = selectedTokenScaler.gameObject;
+        SelectionManager.instance.tokenClicked -= OnTokenClicked;
         selectedToken.transform.SetParent(playerTokenParent.transform);
         selectedToken.tag = "Player";
-        RemoveSelectedToken();
-        selectedTokenScaler.ScaleDown(tokenScaleSpeed);
+        tokens.Remove(selectedToken);
+        enemyDraftSelection.tokens.Remove(selectedToken);
         isSelecting = false;
     }
 
-    private void RemoveSelectedToken()
+    private void OnTokenClicked(GameObject token)
     {
-        tokens.Remove(selectedToken);
-        tokenScalers.Remove(selectedTokenScaler);
-        tokenStates.Remove(selectedTokenState);
-        enemyDraftSelection.tokens.Remove(selectedToken);
-        enemyDraftSelection.tokenScalers.Remove(selectedTokenScaler);
-    }
-
-    private void OnSpacePressed()
-    {
-        selectedTokenScaler.ScaleDown(tokenScaleSpeed);
-        selectedTokenState.UnsetPlayerOwned();
-        HandleDisplayToken(false);
-        int currentIndex = tokenScalers.IndexOf(selectedTokenScaler);
-        int nextIndex = (currentIndex + 1) % tokenScalers.Count;
-        selectedTokenScaler = tokenScalers[nextIndex];
-        selectedTokenState = tokenStates[nextIndex];
-        selectedTokenScaler.ScaleUp(tokenScaleSpeed);
-        selectedTokenState.SetPlayerOwned();
-        HandleDisplayToken(true);
+        if (!isSelecting) { Debug.Log("Hi"); return; }
+        if (!tokens.Contains(token)) { return; }
+        ColliderManager.instance.SwitchToTilesActivated();
+        ColliderManager.instance.SwitchToTokensDeactivated();
+        selectedToken = token;
+        DeactivateTokenSelection();
+        SelectionManager selectionManager = SelectionManager.instance;
+        selectionManager.selectionMode = SelectionManager.SelectionMode.Tile;
+        selectionManager.playerTurn = SelectionManager.PlayerTurn.Player2;
+        selectionManager.SetSelectedToken(selectedToken);
+        selectionManager.ForceTimeUp();
     }
 }

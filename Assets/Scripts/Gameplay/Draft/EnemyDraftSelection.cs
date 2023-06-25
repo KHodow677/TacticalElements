@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
 public class EnemyDraftSelection : MonoBehaviour
@@ -44,9 +45,10 @@ public class EnemyDraftSelection : MonoBehaviour
         await Task.Delay(delayMilliseconds);
 
         // Set up
-        selectedTokenScaler = GetRandomElementWithBias(tokenScalers);
+        selectedToken = GetRandomElementWithBias(tokens);
+        selectedTokenScaler = selectedToken.GetComponent<ScaleObject>();
         selectedTile = tiles[UnityEngine.Random.Range(0, tiles.Count)];
-        selectedToken = selectedTokenScaler.gameObject;
+
         selectedTokenScaler.ScaleUp(tokenScaleSpeed);
         TokenMoveController moveController = selectedToken.GetComponent<TokenMoveController>();
         moveController.StartMoveToPosition(selectedTile.transform.position);
@@ -62,10 +64,7 @@ public class EnemyDraftSelection : MonoBehaviour
         tokens.Remove(selectedToken);
         tokenScalers.Remove(selectedTokenScaler);
         tiles.Remove(selectedTile);
-        DraftTokenSelection playerDraftManager = draftTokenSelection;
-        playerDraftManager.tokens.Remove(selectedToken);
-        playerDraftManager.tokenScalers.Remove(selectedTokenScaler);
-        playerDraftManager.tokenStates.Remove(selectedToken.GetComponent<TokenState>());
+        draftTokenSelection.tokens.Remove(selectedToken);
 
         delayMilliseconds = (int)(moveController.moveDuration * 1000);
         await Task.Delay(delayMilliseconds);
@@ -78,9 +77,15 @@ public class EnemyDraftSelection : MonoBehaviour
         draftTokenSelection.isPlayerTurn = true;
         draftTileSelection.isPlayerTurn = true;
         draftTileSelection.sameTurn = false;
-        SelectionManager.instance.ResetClock();
+        DelaySetPlayerTurn(0.1f);
+        SelectionManager.instance.ForceTimeUp();
     }
 
+    private async void DelaySetPlayerTurn(float delaySeconds)
+    {
+        await Task.Delay((int) (delaySeconds * 1000));
+        SelectionManager.instance.playerTurn = SelectionManager.PlayerTurn.Player1;
+    }
 
     private T GetRandomElementWithBias<T>(List<T> list)
     {

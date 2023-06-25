@@ -21,4 +21,9 @@ public class ToggleIndicators : MonoBehaviour
     {
         highlight.SetActive(active);
     }
+
+    public bool IsHighlighted()
+    {
+        return highlight.activeInHierarchy;
+    }
 }

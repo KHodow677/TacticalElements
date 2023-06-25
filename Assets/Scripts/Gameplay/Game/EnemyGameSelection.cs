@@ -46,6 +46,7 @@ public class EnemyGameSelection : MonoBehaviour {
         // Load up list of player tokens from child objects
         tokens = new List<GameObject>();
         int childCount = transform.childCount;
+        ColliderManager.instance.SwitchToTilesActivated();
         for (int i = 0; i < childCount; i++)
         {
             Transform childTransform = transform.GetChild(i);
@@ -83,7 +84,6 @@ public class EnemyGameSelection : MonoBehaviour {
 
         selectedTokenScaler = tokenScalers[UnityEngine.Random.Range(0, tokenScalers.Count)];
         bool shouldBreak = false;
-
         foreach (GameObject token in tokens)
         {
             List<GameObject> availableSpots = gameTileSelection.GetAvailableTiles(token, "Enemy");
@@ -106,7 +106,6 @@ public class EnemyGameSelection : MonoBehaviour {
 
         // Set selected token
         selectedToken = selectedTokenScaler.gameObject;
-        TokenMoveController moveController = selectedToken.GetComponent<TokenMoveController>();
 
         tiles = new List<GameObject>();
         while (gameTokenSelection.selectedToken == null)
@@ -123,6 +122,7 @@ public class EnemyGameSelection : MonoBehaviour {
             if (tileObject == null) { continue; }
             tiles.Add(tileObject);
         }
+        ColliderManager.instance.SwitchToTilesDeactivated();
 
         // Set up Player turn
         gameTokenSelection.isPlayerTurn = true;
@@ -130,9 +130,8 @@ public class EnemyGameSelection : MonoBehaviour {
         gameTileSelection.sameTurn = false;
         isEnemyTurn = false;
 
-        await Task.Delay(TimeSpan.FromSeconds(moveController.moveDuration));
+        
         SelectionManager.instance.UnpauseClock();
-
         selectedTile = tiles[UnityEngine.Random.Range(0, tiles.Count)];
         // Set selected tile
         for (int i = 0; i < tiles.Count; i++)
@@ -147,10 +146,18 @@ public class EnemyGameSelection : MonoBehaviour {
         TokenMoveController tokenMoveController = selectedToken.GetComponent<TokenMoveController>();
 
         GameObject tokenAtTile = gameTileSelection.GetTokenAtPosition(selectedTile.transform.position, "Player");
-        if (tokenAtTile != null) { tokenMoveController.StartMoveToPosition(selectedTile.transform.position, tokenAtTile, resetClockAfterMove: true); }
-        else { tokenMoveController.StartMoveToPosition(selectedTile.transform.position, resetClockAfterMove: true); }
-
+        if (tokenAtTile != null) { tokenMoveController.StartMoveToPosition(selectedTile.transform.position, tokenAtTile); }
+        else { tokenMoveController.StartMoveToPosition(selectedTile.transform.position); }
+        await Task.Delay(TimeSpan.FromSeconds(tokenMoveController.moveDuration));
         // Tear down
         isSelecting = false;
+        DelaySetPlayerTurn(0.1f);
+        SelectionManager.instance.ForceTimeUp();
+    }
+
+    private async void DelaySetPlayerTurn(float delaySeconds)
+    {
+        await Task.Delay((int)(delaySeconds * 1000));
+        SelectionManager.instance.playerTurn = SelectionManager.PlayerTurn.Player1;
     }
 }

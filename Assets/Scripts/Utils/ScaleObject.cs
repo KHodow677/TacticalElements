@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Threading.Tasks;
 
 public class ScaleObject : MonoBehaviour {
     [SerializeField] Vector3 normalScale;
@@ -10,7 +11,7 @@ public class ScaleObject : MonoBehaviour {
     /// </summary>
     /// <param name="time">Time in seconds</param>
     public void ScaleUp (float time) {
-        StartCoroutine(ScaleTransform(largerScale, time));
+        ScaleTransform(largerScale, time);
     }
 
     /// <summary>
@@ -18,7 +19,7 @@ public class ScaleObject : MonoBehaviour {
     /// </summary>
     /// <param name="time">Time in seconds</param>
     public void ScaleDown (float time) {
-        StartCoroutine(ScaleTransform(normalScale, time));
+        ScaleTransform(normalScale, time);
     }
 
     /// <summary>
@@ -27,7 +28,13 @@ public class ScaleObject : MonoBehaviour {
     /// <param name="targetScale">Scale to lerp to</param>
     /// <param name="time">Time in seconds</param>
     /// <returns></returns>
-    private IEnumerator ScaleTransform (Vector3 targetScale, float time) {
+    /// <summary>
+    /// Scales the object to the target scale over time seconds
+    /// </summary>
+    /// <param name="targetScale">Scale to lerp to</param>
+    /// <param name="time">Time in seconds</param>
+    private async void ScaleTransform(Vector3 targetScale, float time)
+    {
         // Set up scaling
         Vector3 initialScale = transform.localScale;
         float elapsedTime = 0f;
@@ -37,10 +44,11 @@ public class ScaleObject : MonoBehaviour {
         {
             transform.localScale = Vector3.Lerp(initialScale, targetScale, elapsedTime / time);
             elapsedTime += Time.deltaTime;
-            yield return null;
+            await Task.Yield();
         }
 
         // Ensure final scale is set accurately
         transform.localScale = targetScale;
     }
+
 }

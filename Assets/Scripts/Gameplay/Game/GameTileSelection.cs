@@ -15,10 +15,7 @@ public class GameTileSelection : MonoBehaviour
     [SerializeField] private float tileScaleSpeed;
     [SerializeField] private List<GameObject> allTiles;
     private List<GameObject> tiles;
-    private List<ScaleObject> tileScalers;
-    private List<ToggleIndicators> tileIndicators;
-    private ScaleObject selectedTileScaler;
-    private ToggleIndicators selectedTileIndicator;
+
     [HideInInspector] public GameObject selectedTile;
 
     private void Start()
@@ -41,22 +38,23 @@ public class GameTileSelection : MonoBehaviour
 
     private void ActivateTileSelection()
     {
-        SelectionManager.instance.spacePressed += OnSpacePressed;
+        SelectionManager.instance.tileClicked += OnTileClicked;
         FindMoveOptionsFromSelectedToken();
     }
 
     private void DeactivateTileSelection()
     {
-        SelectionManager.instance.spacePressed -= OnSpacePressed;
-        gameTokenSelection.HandleDisplayToken(false);
+        SelectionManager.instance.tileClicked -= OnTileClicked;
 
-        foreach (ToggleIndicators tileIndicator in tileIndicators)
+        foreach (GameObject tile in tiles)
         {
+            ToggleIndicators tileIndicator = tile.GetComponent<ToggleIndicators>();
+            ScaleObject tileScaler = tile.GetComponent<ScaleObject>();
             tileIndicator.ToggleHighlight(false);
             tileIndicator.ToggleTarget(false);
+            tileScaler.ScaleDown(tileScaleSpeed);
         }
 
-        selectedTile = selectedTileScaler.gameObject;
         GameObject selectedTokenObject = gameTokenSelection.selectedToken;
         TokenMoveController tokenMoveController = selectedTokenObject.GetComponent<TokenMoveController>();
 
@@ -64,7 +62,6 @@ public class GameTileSelection : MonoBehaviour
         if (tokenAtTile != null) { tokenMoveController.StartMoveToPosition(selectedTile.transform.position, tokenAtTile); }
         else { tokenMoveController.StartMoveToPosition(selectedTile.transform.position); }
 
-        selectedTileScaler.ScaleDown(tileScaleSpeed);
         isSelecting = false;
     }
 
@@ -77,45 +74,28 @@ public class GameTileSelection : MonoBehaviour
         }
 
         GameObject selectedToken = gameTokenSelection.selectedToken;
+        ColliderManager.instance.SwitchToTokensActivated();
         tiles = GetAvailableTiles(selectedToken, "Player");
-        tiles.Sort((obj1, obj2) =>
-        {
-            Vector3 pos1 = obj1.transform.position;
-            Vector3 pos2 = obj2.transform.position;
-            int yComparison = pos1.y.CompareTo(pos2.y);
-            if (yComparison != 0) { return yComparison; }
-            return pos1.x.CompareTo(pos2.x);
-        });
 
-        tileScalers = new List<ScaleObject>();
-        tileIndicators = new List<ToggleIndicators>();
-        for (int i = 0; i < tiles.Count; i++)
+        foreach (GameObject tile in tiles)
         {
-            tileScalers.Add(tiles[i].GetComponent<ScaleObject>());
-            tileIndicators.Add(tiles[i].GetComponent<ToggleIndicators>());
-        }
-
-        foreach (ToggleIndicators tileIndicator in tileIndicators)
-        {
+            ToggleIndicators tileIndicator = tile.GetComponent<ToggleIndicators>();
             tileIndicator.ToggleHighlight(true);
+            
         }
+        ColliderManager.instance.SwitchToTokensDeactivated();
 
-        selectedTileScaler = tileScalers[0];
-        selectedTileIndicator = tileIndicators[0];
-        selectedTileScaler.ScaleUp(tileScaleSpeed);
-        selectedTileIndicator.ToggleTarget(true);
         isSelecting = true;
 
-        SetEnemyTurnDelayed();
+        SetEnemyTurnDelayed(0.1f);
         gameTokenSelection.isPlayerTurn = false;
-        enemyGameSelection.isEnemyTurn = true;
         isPlayerTurn = false;
         sameTurn = false;
     }
 
-    private async void SetEnemyTurnDelayed()
+    private async void SetEnemyTurnDelayed(float delayInSeconds)
     {
-        await Task.Delay(TimeSpan.FromSeconds(0.5f * SelectionManager.instance.timePerTurn));
+        await Task.Delay(TimeSpan.FromSeconds(delayInSeconds));
         enemyGameSelection.isEnemyTurn = true;
     }
 
@@ -175,16 +155,16 @@ public class GameTileSelection : MonoBehaviour
         }
     }
 
-    private void OnSpacePressed()
+    private void OnTileClicked(GameObject tile)
     {
-        selectedTileScaler.ScaleDown(tileScaleSpeed);
-        selectedTileIndicator.ToggleTarget(false);
-
-        int currentIndex = tileScalers.IndexOf(selectedTileScaler);
-        int nextIndex = (currentIndex + 1) % tileScalers.Count;
-        selectedTileScaler = tileScalers[nextIndex];
-        selectedTileIndicator = tileIndicators[nextIndex];
-        selectedTileScaler.ScaleUp(tileScaleSpeed);
-        selectedTileIndicator.ToggleTarget(true);
+        if (!tiles.Contains(tile)) { return; }
+        ColliderManager.instance.SwitchToTilesDeactivated();
+        ColliderManager.instance.SwitchToTokensActivated();
+        selectedTile = tile;
+        DeactivateTileSelection();
+        SelectionManager selectionManager = SelectionManager.instance;
+        selectionManager.selectionMode = SelectionManager.SelectionMode.Token;
+        selectionManager.ClearSelectedToken();
+        selectionManager.ForceTimeUp();
     }
 }
