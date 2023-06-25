@@ -12,6 +12,7 @@ public class DraftTileSelection : MonoBehaviour {
     [HideInInspector] public bool isSelecting;
     [HideInInspector] public bool sameTurn;
     [HideInInspector] public bool isPlayerTurn = true;
+    [HideInInspector] public bool turnEndedEarly;
     [SerializeField] private float tileScaleSpeed;
     [SerializeField] private List<GameObject> tiles;
 
@@ -29,8 +30,10 @@ public class DraftTileSelection : MonoBehaviour {
         else if (sameTurn && isPlayerTurn) { ActivateTileSelection(); }
     }
 
-    private void ActivateTileSelection() 
+    private async void ActivateTileSelection() 
     {
+        if (!draftTokenSelection.turnEndedEarly) { await Task.Delay(100); }
+
         // Add listener to spacePressed event
         SelectionManager.instance.tileClicked += OnTileClicked;
 
@@ -51,7 +54,7 @@ public class DraftTileSelection : MonoBehaviour {
 
     private void DeactivateTileSelection() 
     {
-        if (!isSelecting) { return; }
+        if (selectedTile == null) { selectedTile = tiles[Random.Range(0, tiles.Count)]; }
         // Remove listener to spacePressed event
         SelectionManager.instance.tileClicked -= OnTileClicked;
 
@@ -72,7 +75,14 @@ public class DraftTileSelection : MonoBehaviour {
 
         // Remove selected token from list
         tiles.Remove(selectedTile);
-
+        selectedTile = null;
+        ResetSelectedTokenDelayed(0.1f);
+        if (!turnEndedEarly && isSelecting)
+        {
+            ColliderManager.instance.SwitchToTilesDeactivated();
+            ColliderManager.instance.SwitchToTokensActivated();
+            ResetSelection();
+        }
         isSelecting = false;
     }
 
@@ -81,17 +91,28 @@ public class DraftTileSelection : MonoBehaviour {
         await Task.Delay((int)(delaySeconds * 1000));
         enemyDraftSelection.isEnemyTurn = true;
     }
+    private async void ResetSelectedTokenDelayed(float delaySeconds)
+    {
+        await Task.Delay((int)(delaySeconds * 1000));
+        draftTokenSelection.selectedToken = null;
+        draftTokenSelection.turnEndedEarly = false;
+    }
+    private void ResetSelection() 
+    {
+        SelectionManager selectionManager = SelectionManager.instance;
+        selectionManager.selectionMode = SelectionManager.SelectionMode.Token;
+        selectionManager.ClearSelectedToken();
+    }
 
     private void OnTileClicked(GameObject tile) 
     {
         if (!tiles.Contains(tile)) { return; }
         ColliderManager.instance.SwitchToTilesDeactivated();
         ColliderManager.instance.SwitchToTokensActivated();
+        turnEndedEarly = true;
         selectedTile = tile;
         DeactivateTileSelection();
-        SelectionManager selectionManager = SelectionManager.instance;
-        selectionManager.selectionMode = SelectionManager.SelectionMode.Token;
-        selectionManager.ClearSelectedToken();
-        selectionManager.ForceTimeUp();
+        ResetSelection();
+        SelectionManager.instance.ForceTimeUp();
     }
 }

@@ -10033,6 +10033,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5697054617648365799}
     - target: {fileID: 3576825087567514200, guid: 9e97087efaccdd243951b32b79483105, type: 3}
+      propertyPath: timePerTurn
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3576825087567514200, guid: 9e97087efaccdd243951b32b79483105, type: 3}
       propertyPath: tokenScaleSpeed
       value: 0.1
       objectReference: {fileID: 0}

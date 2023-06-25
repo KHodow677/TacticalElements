@@ -67,7 +67,6 @@ public class SelectionManager : MonoBehaviour {
         TokenState tokenState = token.GetComponent<TokenState>();
 
         tokenScaler.ScaleUp(scaleSpeed);
-        tokenState.SetPlayerOwned();
         HandleDisplayToken(true, token);
         tokenHovered?.Invoke(token);
     }
@@ -79,7 +78,6 @@ public class SelectionManager : MonoBehaviour {
         TokenState tokenState = token.GetComponent<TokenState>();
 
         tokenScaler.ScaleDown(scaleSpeed);
-        tokenState.UnsetPlayerOwned();
         HandleDisplayToken(false, token);
         tokenUnhovered?.Invoke(token);
     }

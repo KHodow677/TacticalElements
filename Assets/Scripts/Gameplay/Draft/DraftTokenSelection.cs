@@ -13,6 +13,7 @@ public class DraftTokenSelection : MonoBehaviour
     [SerializeField] public List<GameObject> tokens;
 
     [HideInInspector] public bool isSelecting;
+    [HideInInspector] public bool turnEndedEarly; 
     [HideInInspector] public bool isPlayerTurn = true;
     [HideInInspector] public GameObject selectedToken;
 
@@ -46,6 +47,7 @@ public class DraftTokenSelection : MonoBehaviour
 
         SetSameTurnDelayed(0.1f);
         isSelecting = true;
+        draftTileSelection.turnEndedEarly = false;
     }
 
     private void EndDraft()
@@ -67,26 +69,44 @@ public class DraftTokenSelection : MonoBehaviour
 
     private void DeactivateTokenSelection()
     {
+        if (selectedToken == null) 
+        {
+            selectedToken = tokens[Random.Range(0, tokens.Count)]; 
+            SelectionManager.instance.OnTokenSelect(selectedToken);
+        }
         SelectionManager.instance.tokenClicked -= OnTokenClicked;
         selectedToken.transform.SetParent(playerTokenParent.transform);
         selectedToken.tag = "Player";
         tokens.Remove(selectedToken);
         enemyDraftSelection.tokens.Remove(selectedToken);
+        selectedToken.GetComponent<TokenState>().SetPlayerOwned();
+        if (!turnEndedEarly && isSelecting) 
+        {
+            ColliderManager.instance.SwitchToTilesActivated();
+            ColliderManager.instance.SwitchToTokensDeactivated();
+            ResetSelection();
+        }
         isSelecting = false;
     }
 
-    private void OnTokenClicked(GameObject token)
+    private void ResetSelection()
     {
-        if (!isSelecting) { Debug.Log("Hi"); return; }
-        if (!tokens.Contains(token)) { return; }
-        ColliderManager.instance.SwitchToTilesActivated();
-        ColliderManager.instance.SwitchToTokensDeactivated();
-        selectedToken = token;
-        DeactivateTokenSelection();
         SelectionManager selectionManager = SelectionManager.instance;
         selectionManager.selectionMode = SelectionManager.SelectionMode.Tile;
         selectionManager.playerTurn = SelectionManager.PlayerTurn.Player2;
         selectionManager.SetSelectedToken(selectedToken);
-        selectionManager.ForceTimeUp();
+    }
+
+    private void OnTokenClicked(GameObject token)
+    {
+        if (!isSelecting) { return; }
+        if (!tokens.Contains(token)) { return; }
+        ColliderManager.instance.SwitchToTilesActivated();
+        ColliderManager.instance.SwitchToTokensDeactivated();
+        turnEndedEarly = true;
+        selectedToken = token;
+        DeactivateTokenSelection();
+        ResetSelection();
+        SelectionManager.instance.ForceTimeUp();
     }
 }
