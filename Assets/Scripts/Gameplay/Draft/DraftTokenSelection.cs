@@ -12,8 +12,7 @@ public class DraftTokenSelection : MonoBehaviour
     [SerializeField] private GameObject playerTokenParent;
     [SerializeField] public List<GameObject> tokens;
 
-    [HideInInspector] public bool isSelecting;
-    [HideInInspector] public bool turnEndedEarly; 
+    [HideInInspector] public bool isSelecting; 
     [HideInInspector] public bool isPlayerTurn = true;
     [HideInInspector] public GameObject selectedToken;
 
@@ -47,7 +46,6 @@ public class DraftTokenSelection : MonoBehaviour
 
         SetSameTurnDelayed(0.1f);
         isSelecting = true;
-        draftTileSelection.turnEndedEarly = false;
     }
 
     private void EndDraft()
@@ -71,8 +69,10 @@ public class DraftTokenSelection : MonoBehaviour
     {
         if (selectedToken == null) 
         {
-            selectedToken = tokens[Random.Range(0, tokens.Count)]; 
+            selectedToken = tokens[Random.Range(0, tokens.Count)];
             SelectionManager.instance.OnTokenSelect(selectedToken);
+            SelectionManager.instance.OnTokenClicked(selectedToken, false);
+            return;
         }
         SelectionManager.instance.tokenClicked -= OnTokenClicked;
         selectedToken.transform.SetParent(playerTokenParent.transform);
@@ -80,12 +80,8 @@ public class DraftTokenSelection : MonoBehaviour
         tokens.Remove(selectedToken);
         enemyDraftSelection.tokens.Remove(selectedToken);
         selectedToken.GetComponent<TokenState>().SetPlayerOwned();
-        if (!turnEndedEarly && isSelecting) 
-        {
-            ColliderManager.instance.SwitchToTilesActivated();
-            ColliderManager.instance.SwitchToTokensDeactivated();
-            ResetSelection();
-        }
+        //ResetSelectedTileDelayed(0.1f);
+
         isSelecting = false;
     }
 
@@ -97,16 +93,18 @@ public class DraftTokenSelection : MonoBehaviour
         selectionManager.SetSelectedToken(selectedToken);
     }
 
-    private void OnTokenClicked(GameObject token)
+    private void OnTokenClicked(GameObject token, bool physicallyClicked)
     {
         if (!isSelecting) { return; }
         if (!tokens.Contains(token)) { return; }
         ColliderManager.instance.SwitchToTilesActivated();
         ColliderManager.instance.SwitchToTokensDeactivated();
-        turnEndedEarly = true;
         selectedToken = token;
         DeactivateTokenSelection();
         ResetSelection();
-        SelectionManager.instance.ForceTimeUp();
+        if(physicallyClicked)
+        {
+            SelectionManager.instance.ForceTimeUp();
+        }
     }
 }

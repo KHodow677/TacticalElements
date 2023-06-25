@@ -155,7 +155,7 @@ public class GameTileSelection : MonoBehaviour
         }
     }
 
-    private void OnTileClicked(GameObject tile)
+    private void OnTileClicked(GameObject tile, bool physicallyClicked)
     {
         if (!tiles.Contains(tile)) { return; }
         ColliderManager.instance.SwitchToTilesDeactivated();

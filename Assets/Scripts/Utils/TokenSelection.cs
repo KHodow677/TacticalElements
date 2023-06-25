@@ -14,6 +14,6 @@ public class TokenSelection : MonoBehaviour
     }
     private void OnMouseDown()
     {
-        SelectionManager.instance.OnTokenClicked(gameObject);
+        SelectionManager.instance.OnTokenClicked(gameObject, true);
     }
 }

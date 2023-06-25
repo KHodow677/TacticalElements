@@ -26,14 +26,16 @@ public class SelectionManager : MonoBehaviour {
     [HideInInspector] public SelectionMode selectionMode = SelectionMode.Token;
     [HideInInspector] public PlayerTurn playerTurn = PlayerTurn.Player1;
     [HideInInspector] public bool isGameplay;
+    [HideInInspector] public bool tileIsClicked;
 
     // Events
     public delegate void ObjSelected(GameObject token);
+    public delegate void ObjClicked(GameObject token, bool physicallyClicked);
     public delegate void TimeUp();
     public delegate void GameModeChanged();
 
-    public event ObjSelected tokenClicked;
-    public event ObjSelected tileClicked;
+    public event ObjClicked tokenClicked;
+    public event ObjClicked tileClicked;
     public event ObjSelected tokenHovered;
     public event ObjSelected tokenUnhovered;
     public event TimeUp timeUp;
@@ -82,11 +84,11 @@ public class SelectionManager : MonoBehaviour {
         tokenUnhovered?.Invoke(token);
     }
 
-    public void OnTokenClicked(GameObject token)
+    public void OnTokenClicked(GameObject token, bool physicallyClicked)
     {
         if (selectionMode != SelectionMode.Token) { return; }
         if (playerTurn != PlayerTurn.Player1) { return; }
-        tokenClicked?.Invoke(token);
+        tokenClicked?.Invoke(token, physicallyClicked);
     }
 
     public void OnTileSelect(GameObject tile)
@@ -109,10 +111,10 @@ public class SelectionManager : MonoBehaviour {
         tileIndicator.ToggleTarget(false);
     }
 
-    public void OnTileClicked(GameObject tile)
+    public void OnTileClicked(GameObject tile, bool physicallyClicked)
     {
         if (selectionMode != SelectionMode.Tile) { return; }
-        tileClicked?.Invoke(tile);
+        tileClicked?.Invoke(tile, physicallyClicked);
     }
     public void SetSelectedToken(GameObject token)
     {

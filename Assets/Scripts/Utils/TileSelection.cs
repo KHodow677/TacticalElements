@@ -22,6 +22,6 @@ public class TileSelection : MonoBehaviour
     private void OnMouseDown()
     {
         if (!tileIndicator.IsHighlighted()) { return; }
-        SelectionManager.instance.OnTileClicked(gameObject);
+        SelectionManager.instance.OnTileClicked(gameObject, true);
     }
 }
