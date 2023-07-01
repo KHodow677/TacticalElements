@@ -7151,6 +7151,7 @@ MonoBehaviour:
   - {fileID: 1011528940}
   - {fileID: 345539075}
   - {fileID: 1967922828}
+  scaleTime: 0.1
 --- !u!1 &1518278594
 GameObject:
   m_ObjectHideFlags: 0
