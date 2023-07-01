@@ -8,7 +8,11 @@ public class ColliderManager : MonoBehaviour
     public static ColliderManager instance { get { return _instance; } }
 
     [SerializeField] private List<Collider2D> tokenColliders;
-    [SerializeField] private List <Collider2D> tileColliders;
+    [SerializeField] private List<Collider2D> tileColliders;
+    [SerializeField] private float scaleTime;
+
+    private List<ScaleObject> tokenScalers;
+    private List<ScaleObject> tileScalers;
 
     private void Awake()
     {
@@ -21,11 +25,28 @@ public class ColliderManager : MonoBehaviour
         else { _instance = this; }
     }
 
+    private void Start()
+    {
+        tokenScalers = new List<ScaleObject>();
+        tileScalers = new List<ScaleObject>();
+
+        foreach (Collider2D tokenCollider in tokenColliders)
+        {
+            tokenScalers.Add(tokenCollider.GetComponent<ScaleObject>());
+        }
+
+        foreach (Collider2D tileCollider in tileColliders)
+        {
+            tileScalers.Add(tileCollider.GetComponent<ScaleObject>());
+        }
+    }
+
     public void SwitchToTilesDeactivated()
     {
-        foreach(Collider2D tileCollider in tileColliders)
+        for (int i = 0; i < tileColliders.Count; i++)
         {
-            tileCollider.enabled = false;
+            tileScalers[i].ScaleDown(scaleTime);
+            tileColliders[i].enabled = false;
         }
     }
 
@@ -39,18 +60,18 @@ public class ColliderManager : MonoBehaviour
 
     public void SwitchToTokensDeactivated()
     {
-        foreach (Collider2D tileCollider in tokenColliders)
+        for (int i = 0; i < tokenColliders.Count; i++)
         {
-            tileCollider.enabled = false;
+            tokenScalers[i].ScaleDown(scaleTime);
+            tokenColliders[i].enabled = false;
         }
     }
 
     public void SwitchToTokensActivated()
     {
-        foreach (Collider2D tileCollider in tokenColliders)
+        foreach (Collider2D tokenCollider in tokenColliders)
         {
-            tileCollider.enabled = true;
+            tokenCollider.enabled = true;
         }
     }
-
 }
