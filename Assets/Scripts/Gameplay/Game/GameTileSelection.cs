@@ -39,6 +39,13 @@ public class GameTileSelection : MonoBehaviour
     private void ActivateTileSelection()
     {
         SelectionManager.instance.tileClicked += OnTileClicked;
+        GameObject selectedTokenObject = gameTokenSelection.selectedToken;
+        List<(int, int)> list = GameplayManager.instance.GetLegalMoves(selectedTokenObject.name);
+        Debug.Log(list.Count);
+/*        foreach ((int, int) tuple in list)
+        {
+            Debug.Log(tuple.ToString());
+        }*/
         FindMoveOptionsFromSelectedToken();
     }
 
@@ -153,6 +160,11 @@ public class GameTileSelection : MonoBehaviour
         {
             tile.GetComponent<ToggleIndicators>().ToggleHighlight(false);
         }
+    }
+
+    private string GenerateMoveString(string tokenName, Vector2Int targetPosition)
+    {
+        return $"{tokenName}:{targetPosition.x},{targetPosition.y}";
     }
 
     private void OnTileClicked(GameObject tile, bool physicallyClicked)

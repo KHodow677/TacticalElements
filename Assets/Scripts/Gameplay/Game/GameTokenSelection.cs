@@ -26,6 +26,7 @@ public class GameTokenSelection : MonoBehaviour
 
     private void OnGameplayMode()
     {
+        GameplayManager.instance.SetUpEngine();
         SelectionManager.instance.timeUp += SwitchStates;
         SelectionManager.instance.ForceTimeUp();
     }

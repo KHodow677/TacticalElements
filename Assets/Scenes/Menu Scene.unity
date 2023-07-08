@@ -229,6 +229,7 @@ MonoBehaviour:
   selectionMode: 0
   playerTurn: 0
   isGameplay: 0
+  tileIsClicked: 0
 --- !u!4 &136241064
 Transform:
   m_ObjectHideFlags: 0
@@ -999,6 +1000,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4300265710982129300, guid: e1720aa5e1178694085cb4215396ad00, type: 3}
+      propertyPath: m_ApplyToSortingLayers.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4300265710982129300, guid: e1720aa5e1178694085cb4215396ad00, type: 3}
+      propertyPath: m_ApplyToSortingLayers.Array.data[2]
+      value: -477506163
+      objectReference: {fileID: 0}
     - target: {fileID: 4300265711273788149, guid: e1720aa5e1178694085cb4215396ad00, type: 3}
       propertyPath: m_Name
       value: Lamp
@@ -2045,6 +2054,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1433606463}
     m_Modifications:
+    - target: {fileID: 6940665328076929404, guid: 6a68f6b166ba91343afc3ac116eaf73e, type: 3}
+      propertyPath: m_Intensity
+      value: 0.75
+      objectReference: {fileID: 0}
     - target: {fileID: 6940665328426212300, guid: 6a68f6b166ba91343afc3ac116eaf73e, type: 3}
       propertyPath: m_RootOrder
       value: 3
