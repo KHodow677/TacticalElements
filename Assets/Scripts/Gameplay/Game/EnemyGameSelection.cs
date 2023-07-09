@@ -148,6 +148,9 @@ public class EnemyGameSelection : MonoBehaviour {
         GameObject tokenAtTile = gameTileSelection.GetTokenAtPosition(selectedTile.transform.position, "Player");
         if (tokenAtTile != null) { tokenMoveController.StartMoveToPosition(selectedTile.transform.position, tokenAtTile); }
         else { tokenMoveController.StartMoveToPosition(selectedTile.transform.position); }
+
+        GameplayManager.instance.MakeMove(selectedToken.name, selectedTile.transform.position);
+
         await Task.Delay(TimeSpan.FromSeconds(tokenMoveController.moveDuration));
         // Tear down
         isSelecting = false;

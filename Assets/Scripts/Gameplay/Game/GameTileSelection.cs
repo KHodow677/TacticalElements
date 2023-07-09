@@ -39,13 +39,6 @@ public class GameTileSelection : MonoBehaviour
     private void ActivateTileSelection()
     {
         SelectionManager.instance.tileClicked += OnTileClicked;
-        GameObject selectedTokenObject = gameTokenSelection.selectedToken;
-        List<(int, int)> list = GameplayManager.instance.GetLegalMoves(selectedTokenObject.name);
-        Debug.Log(list.Count);
-/*        foreach ((int, int) tuple in list)
-        {
-            Debug.Log(tuple.ToString());
-        }*/
         FindMoveOptionsFromSelectedToken();
     }
 
@@ -69,20 +62,25 @@ public class GameTileSelection : MonoBehaviour
         if (tokenAtTile != null) { tokenMoveController.StartMoveToPosition(selectedTile.transform.position, tokenAtTile); }
         else { tokenMoveController.StartMoveToPosition(selectedTile.transform.position); }
 
+        GameplayManager.instance.MakeMove(selectedTokenObject.name, selectedTile.transform.position);
+
         isSelecting = false;
     }
 
     private async void FindMoveOptionsFromSelectedToken()
     {
-        tiles = new List<GameObject>();
         while (gameTokenSelection.selectedToken == null)
         {
             await Task.Yield();
         }
 
-        GameObject selectedToken = gameTokenSelection.selectedToken;
-        ColliderManager.instance.SwitchToTokensActivated();
-        tiles = GetAvailableTiles(selectedToken, "Player");
+        GameObject selectedTokenObject = gameTokenSelection.selectedToken;
+        List<Vector3> tilePosList = GameplayManager.instance.GetPossibleTilePos(selectedTokenObject.name);
+        tiles = new List<GameObject>();
+        for (int i = 0; i < tilePosList.Count; i++)
+        {
+            tiles.Add(GetTileAtPosition(tilePosList[i]));
+        }
 
         foreach (GameObject tile in tiles)
         {
@@ -90,7 +88,6 @@ public class GameTileSelection : MonoBehaviour
             tileIndicator.ToggleHighlight(true);
             
         }
-        ColliderManager.instance.SwitchToTokensDeactivated();
 
         isSelecting = true;
 
@@ -146,7 +143,12 @@ public class GameTileSelection : MonoBehaviour
 
     public void HighlightAvailableTiles(GameObject token, string side)
     {
-        List<GameObject> availableTiles = GetAvailableTiles(token, side);
+        List<Vector3> tilePosList = GameplayManager.instance.GetPossibleTilePos(token.name);
+        List<GameObject> availableTiles = new List<GameObject>();
+        for (int i = 0; i < tilePosList.Count; i++)
+        {
+            availableTiles.Add(GetTileAtPosition(tilePosList[i]));
+        }
         foreach (GameObject tile in availableTiles)
         {
             tile.GetComponent<ToggleIndicators>().ToggleHighlight(true);
@@ -155,16 +157,16 @@ public class GameTileSelection : MonoBehaviour
 
     public void UnhighlightAvailableTiles(GameObject token, string side)
     {
-        List<GameObject> availableTiles = GetAvailableTiles(token, side);
+        List<Vector3> tilePosList = GameplayManager.instance.GetPossibleTilePos(token.name);
+        List<GameObject> availableTiles = new List<GameObject>();
+        for (int i = 0; i < tilePosList.Count; i++)
+        {
+            availableTiles.Add(GetTileAtPosition(tilePosList[i]));
+        }
         foreach (GameObject tile in availableTiles)
         {
             tile.GetComponent<ToggleIndicators>().ToggleHighlight(false);
         }
-    }
-
-    private string GenerateMoveString(string tokenName, Vector2Int targetPosition)
-    {
-        return $"{tokenName}:{targetPosition.x},{targetPosition.y}";
     }
 
     private void OnTileClicked(GameObject tile, bool physicallyClicked)

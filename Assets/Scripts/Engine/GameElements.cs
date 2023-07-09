@@ -34,12 +34,25 @@ namespace GameplayEngine
                 // Check if the new position is within the bounds of the board
                 if (board.IsPositionValid(newX, newY))
                 {
-                    legalMoves.Add((newX, newY));
+                    // Get the token at the new position
+                    Token occupyingToken = board.GetTokenAtPosition(newX, newY);
+
+                    if (occupyingToken != null)
+                    {
+                        UnityEngine.Debug.Log(occupyingToken.Player);
+                    }
+
+                    // Check if the position is unoccupied or occupied by an opponent token
+                    if (occupyingToken == null || occupyingToken.Player != Player)
+                    {
+                        legalMoves.Add((newX, newY));
+                    }
                 }
             }
 
             return legalMoves;
         }
+
     }
 
     // Board class representing the game board
@@ -58,6 +71,31 @@ namespace GameplayEngine
             tiles[x, y] = token;
             token.X = x;
             token.Y = y;
+        }
+
+        // Method to move a token to a new position on the board
+        public void MoveToken(Token token, int targetX, int targetY)
+        {
+            int currentX = token.X;
+            int currentY = token.Y;
+
+            // Clear the current position
+            tiles[currentX, currentY] = null;
+
+            // Check if there is a token at the target position
+            Token capturedToken = tiles[targetX, targetY];
+            if (capturedToken != null)
+            {
+                // Remove the captured token from the board
+                tiles[targetX, targetY] = null;
+            }
+
+            // Place the token at the target position
+            tiles[targetX, targetY] = token;
+
+            // Update the token's position
+            token.X = targetX;
+            token.Y = targetY;
         }
 
         // Method to check if a position is valid (within the bounds of the board)
@@ -287,7 +325,7 @@ namespace GameplayEngine
             // Get the token from the dictionary using the token name
             if (!tokensByName.TryGetValue(tokenName, out Token token))
             {
-                Console.WriteLine($"Token '{tokenName}' not found.");
+                UnityEngine.Debug.Log($"Token '{tokenName}' not found.");
                 return;
             }
 
@@ -300,13 +338,18 @@ namespace GameplayEngine
             List<(int, int)> legalMoves = token.FindLegalMoves(board);
             if (!legalMoves.Contains((targetX, targetY)))
             {
-                Console.WriteLine("Invalid move.");
+                UnityEngine.Debug.Log("Invalid move.");
                 return;
             }
 
             // Move the token to the target position on the board
-            board.PlaceToken(token, targetX, targetY);
+            board.MoveToken(token, targetX, targetY);
+
+            // Update the token's position in the tokensByName dictionary
+            tokensByName[token.Name].X = targetX;
+            tokensByName[token.Name].Y = targetY;
         }
+
 
         // Method to handle a board state input and update the board
         public void HandleBoardState(string boardState)
@@ -359,10 +402,8 @@ namespace GameplayEngine
         // Method to get the possible moves for a given token on the board
         public List<(int, int)> GetPossibleMoves(string tokenName)
         {
-            UnityEngine.Debug.Log(tokenName);
             if (tokensByName.TryGetValue(tokenName, out Token token))
             {
-                UnityEngine.Debug.Log("Hi");
                 return token.FindLegalMoves(board);
             }
             // Token not found, return an empty list

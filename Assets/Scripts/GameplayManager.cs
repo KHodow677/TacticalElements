@@ -46,7 +46,14 @@ public class GameplayManager : MonoBehaviour
         gameplayEngine.HandleBoardState(initialBoardState);
     }
 
-    public Token[] GetSideTokens(Transform sideTransform)
+    public void MakeMove(string tokenName, Vector3 targetPosition)
+    {
+        string move = GenerateMoveString(tokenName, targetPosition);
+        gameplayEngine.HandleMove(move);
+        Debug.Log(gameplayEngine.GetBoardState());
+    }
+
+    private Token[] GetSideTokens(Transform sideTransform)
     {
         Token[] playerTokens = new Token[6];
 
@@ -60,7 +67,8 @@ public class GameplayManager : MonoBehaviour
             List<Vector3> moveOffsets = moveOptions.moveOffsetOptions;
             List<(int, int)> convertedOffsets = ConvertMoveOffsets(moveOffsets);
 
-            string side = sideTransform == playerTransform ? "Player 1" : "Player 2";
+            string side = sideTransform.name == playerTransform.name ? "Player 1" : "Player 2";
+            Debug.Log(side);
 
             playerTokens[i] = new Token(
                 sideTransform.GetChild(i).name,
@@ -85,7 +93,7 @@ public class GameplayManager : MonoBehaviour
         return boardStateBuilder.ToString().TrimEnd(';');
     }
 
-    public (int, int) GetBoardCoordinates(Vector3 tilePosition)
+    private (int, int) GetBoardCoordinates(Vector3 tilePosition)
     {
         // Board Parameters
         int numRows = 5;
@@ -106,16 +114,58 @@ public class GameplayManager : MonoBehaviour
         return (column, row);
     }
 
+    private Vector3 GetTilePosition(int column, int row)
+    {
+        // Board Parameters
+        int numRows = 5;
+        int numCols = 5;
+        float tileSpacing = 1.6f;
+
+        // X and Y coordinates of the leftmost tile
+        float startX = -((numCols - 1) * tileSpacing) / 2f;
+        float startY = ((numRows - 1) * tileSpacing) / 2f;
+
+        // Calculate the tile position based on the column and row
+        float xPos = startX + (column * tileSpacing);
+        float yPos = startY - (row * tileSpacing);
+
+        return new Vector3(xPos, yPos, 0f);
+    }
+
     private List<(int, int)> ConvertMoveOffsets(List<Vector3> vectorOffsets)
     {
         List<(int, int)> moveOffsets = new List<(int, int)>();
-        
+
         foreach (Vector3 vector in vectorOffsets)
         {
-            moveOffsets.Add(((int) vector.x, (int) vector.y));
+            int x = Mathf.RoundToInt(vector.x / 1.6f);
+            int y = Mathf.RoundToInt(-vector.y / 1.6f);
+            moveOffsets.Add((x, y));
         }
+
         return moveOffsets;
     }
 
+
     public List<(int, int)> GetLegalMoves(string tokenName) => gameplayEngine.GetPossibleMoves(tokenName);
+
+    public List<Vector3> GetPossibleTilePos(string tokenName)
+    {
+        List<(int, int)> possibleMoves = gameplayEngine.GetPossibleMoves(tokenName);
+        List<Vector3> tilePositions = new List<Vector3>();
+        foreach ((int,int) move in possibleMoves)
+        {
+            tilePositions.Add(GetTilePosition(move.Item1, move.Item2));
+        }
+        return tilePositions;
+    }
+
+    private string GenerateMoveString(string tokenName, Vector3 targetPosition)
+    {
+        (int, int) targetCoords = GetBoardCoordinates(targetPosition);
+        int targetX = targetCoords.Item1;
+        int targetY = targetCoords.Item2;
+
+        return $"{tokenName}:{targetX},{targetY}";
+    }
 }
