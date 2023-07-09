@@ -6,6 +6,7 @@ using System.Linq;
 using System;
 using System.Text;
 using PlasticGui.WorkspaceWindow;
+using UnityEditor.AssetImporters;
 
 public class GameplayManager : MonoBehaviour
 {
@@ -46,11 +47,39 @@ public class GameplayManager : MonoBehaviour
         gameplayEngine.HandleBoardState(initialBoardState);
     }
 
-    public void MakeMove(string tokenName, Vector3 targetPosition)
+    public void MakeMove(GameObject token, Vector3 targetPosition, GameObject targetToken)
     {
-        string move = GenerateMoveString(tokenName, targetPosition);
-        gameplayEngine.HandleMove(move);
+        string move = GenerateMoveString(token.name, targetPosition);
+        MakeMoveFromString(move);
         Debug.Log(gameplayEngine.GetBoardState());
+    }
+
+    public void MakeMoveFromString(string move)
+    {
+        string tokenName = gameplayEngine.GetTokenNameFromMove(move);
+        if (tokenName == null) { return; }
+
+        (int, int) targetCoords = gameplayEngine.GetTargetPositionFromMove(move);
+        (int, int) tokenCoords = gameplayEngine.GetTokenPosition(tokenName);
+
+        if (targetCoords.Item1 == -1 || targetCoords.Item2 == -1) { return; }
+        if (tokenCoords.Item1 == -1 || tokenCoords.Item2 == -1) { return; }
+
+        Vector3 tokenPosition = GetTilePosition(tokenCoords.Item1, tokenCoords.Item2);
+        Vector3 targetPosition = GetTilePosition(targetCoords.Item1, targetCoords.Item2);
+        string side = gameplayEngine.GetTokenPlayer(tokenName);
+        Transform player = side == "Player 1" ? playerTransform : enemyTransform;
+        Transform otherPlayer = side == "Player 1" ? enemyTransform : playerTransform;
+
+        
+        GameObject token = GetTokenAtPosition(tokenPosition, player);
+        GameObject targetToken = GetTokenAtPosition(targetPosition, otherPlayer);
+
+        gameplayEngine.HandleMove(move);
+
+        TokenMoveController tokenMover = token.GetComponent<TokenMoveController>();
+        if (targetToken == null) { tokenMover.StartMoveToPosition(targetPosition); }
+        else { tokenMover.StartMoveToPosition(targetPosition, targetToken); }
     }
 
     private Token[] GetSideTokens(Transform sideTransform)
@@ -68,7 +97,6 @@ public class GameplayManager : MonoBehaviour
             List<(int, int)> convertedOffsets = ConvertMoveOffsets(moveOffsets);
 
             string side = sideTransform.name == playerTransform.name ? "Player 1" : "Player 2";
-            Debug.Log(side);
 
             playerTokens[i] = new Token(
                 sideTransform.GetChild(i).name,
@@ -130,6 +158,20 @@ public class GameplayManager : MonoBehaviour
         float yPos = startY - (row * tileSpacing);
 
         return new Vector3(xPos, yPos, 0f);
+    }
+
+    private GameObject GetTokenAtPosition(Vector3 position, Transform sideTransform)
+    {
+        for (int i = 0; i < sideTransform.childCount; i++)
+        {
+            Vector3 possiblePosition = sideTransform.GetChild(i).position;
+            if (possiblePosition == position && sideTransform.GetChild(i).gameObject.activeInHierarchy)
+            {
+                return sideTransform.GetChild(i).gameObject;
+            }
+        }
+
+        return null;
     }
 
     private List<(int, int)> ConvertMoveOffsets(List<Vector3> vectorOffsets)

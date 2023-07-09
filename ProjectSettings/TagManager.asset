@@ -4,7 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Enemy
+  - Player 2
+  - Player 1
   layers:
   - Default
   - TransparentFX

@@ -76,7 +76,7 @@ public class DraftTokenSelection : MonoBehaviour
         }
         SelectionManager.instance.tokenClicked -= OnTokenClicked;
         selectedToken.transform.SetParent(playerTokenParent.transform);
-        selectedToken.tag = "Player";
+        selectedToken.tag = "Player 1";
         tokens.Remove(selectedToken);
         enemyDraftSelection.tokens.Remove(selectedToken);
         selectedToken.GetComponent<TokenState>().SetPlayerOwned();

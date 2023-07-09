@@ -10175,6 +10175,10 @@ PrefabInstance:
       propertyPath: tiles.Array.data[9]
       value: 
       objectReference: {fileID: 6780005867077201178}
+    - target: {fileID: 4724564395056882052, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4724564395056882075, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
@@ -10203,6 +10207,14 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: -167575062, guid: 505790e8144d09440b4ade55aa465765, type: 3}
+    - target: {fileID: 5442416765099385678, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
+      propertyPath: m_Color.r
+      value: 0.78823537
+      objectReference: {fileID: 0}
+    - target: {fileID: 5442416765099385678, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5442416765099385678, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
       propertyPath: m_SortingLayer
       value: 2
@@ -10266,7 +10278,7 @@ PrefabInstance:
       objectReference: {fileID: 5697054617648365799}
     - target: {fileID: 3576825087567514200, guid: 9e97087efaccdd243951b32b79483105, type: 3}
       propertyPath: timePerTurn
-      value: 10
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3576825087567514200, guid: 9e97087efaccdd243951b32b79483105, type: 3}
       propertyPath: tokenScaleSpeed

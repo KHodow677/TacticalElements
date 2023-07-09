@@ -53,7 +53,7 @@ public class EnemyGameSelection : MonoBehaviour {
             GameObject childObject = childTransform.gameObject;
             if (!childObject.activeInHierarchy) { continue; }
 
-            int tileCount = gameTileSelection.GetAvailableTiles(childObject, "Enemy").Count;
+            int tileCount = gameTileSelection.GetAvailableTiles(childObject, "Player 2").Count;
             if (tileCount == 0) { continue; }
 
             tokens.Add(childObject);
@@ -86,10 +86,10 @@ public class EnemyGameSelection : MonoBehaviour {
         bool shouldBreak = false;
         foreach (GameObject token in tokens)
         {
-            List<GameObject> availableSpots = gameTileSelection.GetAvailableTiles(token, "Enemy");
+            List<GameObject> availableSpots = gameTileSelection.GetAvailableTiles(token, "Player 2");
             foreach (GameObject spot in availableSpots)
             {
-                GameObject tokenAtSpot = gameTileSelection.GetTokenAtPosition(spot.transform.position, "Player");
+                GameObject tokenAtSpot = gameTileSelection.GetTokenAtPosition(spot.transform.position, "Player 1");
                 if (tokenAtSpot != null)
                 {
                     selectedTokenScaler = token.GetComponent<ScaleObject>();
@@ -116,7 +116,7 @@ public class EnemyGameSelection : MonoBehaviour {
         foreach (Vector3 moveOffset in selectedTokenMoveOptions.moveOffsetOptions)
         {
             Vector3 tilePosition = selectedToken.transform.position + moveOffset;
-            GameObject tokenObject = gameTileSelection.GetTokenAtPosition(tilePosition, "Enemy");
+            GameObject tokenObject = gameTileSelection.GetTokenAtPosition(tilePosition, "Player 2");
             if (tokenObject != null) { continue; }
             GameObject tileObject = gameTileSelection.GetTileAtPosition(tilePosition);
             if (tileObject == null) { continue; }
@@ -136,7 +136,7 @@ public class EnemyGameSelection : MonoBehaviour {
         // Set selected tile
         for (int i = 0; i < tiles.Count; i++)
         {
-            GameObject tokenObject = gameTileSelection.GetTokenAtPosition(tiles[i].transform.position, "Player");
+            GameObject tokenObject = gameTileSelection.GetTokenAtPosition(tiles[i].transform.position, "Player 1");
             if (tokenObject != null)
             {
                 selectedTile = tiles[i];
@@ -144,12 +144,9 @@ public class EnemyGameSelection : MonoBehaviour {
             }
         }
         TokenMoveController tokenMoveController = selectedToken.GetComponent<TokenMoveController>();
+        GameObject tokenAtTile = gameTileSelection.GetTokenAtPosition(selectedTile.transform.position, "Player 1");
 
-        GameObject tokenAtTile = gameTileSelection.GetTokenAtPosition(selectedTile.transform.position, "Player");
-        if (tokenAtTile != null) { tokenMoveController.StartMoveToPosition(selectedTile.transform.position, tokenAtTile); }
-        else { tokenMoveController.StartMoveToPosition(selectedTile.transform.position); }
-
-        GameplayManager.instance.MakeMove(selectedToken.name, selectedTile.transform.position);
+        GameplayManager.instance.MakeMove(selectedToken, selectedTile.transform.position, tokenAtTile);
 
         await Task.Delay(TimeSpan.FromSeconds(tokenMoveController.moveDuration));
         // Tear down

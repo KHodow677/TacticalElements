@@ -44,6 +44,13 @@ public class GameTileSelection : MonoBehaviour
 
     private void DeactivateTileSelection()
     {
+        if (selectedTile == null)
+        {
+            selectedTile = tiles[UnityEngine.Random.Range(0, tiles.Count)];
+            SelectionManager.instance.OnTileClicked(selectedTile, false);
+            return;
+        }
+
         SelectionManager.instance.tileClicked -= OnTileClicked;
 
         foreach (GameObject tile in tiles)
@@ -56,13 +63,9 @@ public class GameTileSelection : MonoBehaviour
         }
 
         GameObject selectedTokenObject = gameTokenSelection.selectedToken;
-        TokenMoveController tokenMoveController = selectedTokenObject.GetComponent<TokenMoveController>();
+        GameObject tokenAtTile = GetTokenAtPosition(selectedTile.transform.position, "Player 2");
 
-        GameObject tokenAtTile = GetTokenAtPosition(selectedTile.transform.position, "Enemy");
-        if (tokenAtTile != null) { tokenMoveController.StartMoveToPosition(selectedTile.transform.position, tokenAtTile); }
-        else { tokenMoveController.StartMoveToPosition(selectedTile.transform.position); }
-
-        GameplayManager.instance.MakeMove(selectedTokenObject.name, selectedTile.transform.position);
+        GameplayManager.instance.MakeMove(selectedTokenObject, selectedTile.transform.position, tokenAtTile);
 
         isSelecting = false;
     }
@@ -86,15 +89,17 @@ public class GameTileSelection : MonoBehaviour
         {
             ToggleIndicators tileIndicator = tile.GetComponent<ToggleIndicators>();
             tileIndicator.ToggleHighlight(true);
-            
         }
 
+        // Set up
         isSelecting = true;
 
+        // Set up enemy turn
         SetEnemyTurnDelayed(0.1f);
         gameTokenSelection.isPlayerTurn = false;
         isPlayerTurn = false;
         sameTurn = false;
+        selectedTile = null;
     }
 
     private async void SetEnemyTurnDelayed(float delayInSeconds)
@@ -169,6 +174,13 @@ public class GameTileSelection : MonoBehaviour
         }
     }
 
+    private void ResetSelection()
+    {
+        SelectionManager selectionManager = SelectionManager.instance;
+        selectionManager.selectionMode = SelectionManager.SelectionMode.Token;
+        selectionManager.ClearSelectedToken();
+    }
+
     private void OnTileClicked(GameObject tile, bool physicallyClicked)
     {
         if (!tiles.Contains(tile)) { return; }
@@ -176,9 +188,11 @@ public class GameTileSelection : MonoBehaviour
         ColliderManager.instance.SwitchToTokensActivated();
         selectedTile = tile;
         DeactivateTileSelection();
-        SelectionManager selectionManager = SelectionManager.instance;
-        selectionManager.selectionMode = SelectionManager.SelectionMode.Token;
-        selectionManager.ClearSelectedToken();
-        selectionManager.ForceTimeUp();
+        ResetSelection();
+
+        if (physicallyClicked)
+        {
+            SelectionManager.instance.ForceTimeUp();
+        }
     }
 }

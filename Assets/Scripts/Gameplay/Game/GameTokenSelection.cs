@@ -90,6 +90,14 @@ public class GameTokenSelection : MonoBehaviour
 
     private void DeactivateTokenSelection()
     {
+        if (selectedToken == null)
+        {
+            selectedToken = tokens[UnityEngine.Random.Range(0, tokens.Count)];
+            SelectionManager.instance.OnTokenSelect(selectedToken);
+            SelectionManager.instance.OnTokenClicked(selectedToken, false);
+            return;
+        }
+
         SelectionManager.instance.tokenClicked -= OnTokenClicked;
         SelectionManager.instance.tokenHovered -= OnTokenHovered;
         SelectionManager.instance.tokenUnhovered -= OnTokenUnhovered;
@@ -101,15 +109,23 @@ public class GameTokenSelection : MonoBehaviour
     {
         ColliderManager.instance.SwitchToTilesActivated();
         if (!tokens.Contains(token)) { return; }
-        gameTileSelection.HighlightAvailableTiles(token, "Player");
+        gameTileSelection.HighlightAvailableTiles(token, "Player 1");
         ColliderManager.instance.SwitchToTilesDeactivated();
     }
     private void OnTokenUnhovered(GameObject token)
     {
         ColliderManager.instance.SwitchToTilesActivated();
         if (!tokens.Contains(token)) { return; }
-        gameTileSelection.UnhighlightAvailableTiles(token, "Player");
+        gameTileSelection.UnhighlightAvailableTiles(token, "Player 1");
         ColliderManager.instance.SwitchToTilesDeactivated();
+    }
+
+    private void ResetSelection()
+    {
+        SelectionManager selectionManager = SelectionManager.instance;
+        selectionManager.selectionMode = SelectionManager.SelectionMode.Tile;
+        selectionManager.playerTurn = SelectionManager.PlayerTurn.Player2;
+        selectionManager.SetSelectedToken(selectedToken);
     }
 
     private void OnTokenClicked(GameObject token, bool physicallyClicked)
@@ -119,10 +135,11 @@ public class GameTokenSelection : MonoBehaviour
         ColliderManager.instance.SwitchToTokensDeactivated();
         selectedToken = token;
         DeactivateTokenSelection();
-        SelectionManager selectionManager = SelectionManager.instance;
-        selectionManager.selectionMode = SelectionManager.SelectionMode.Tile;
-        selectionManager.playerTurn = SelectionManager.PlayerTurn.Player2;
-        selectionManager.SetSelectedToken(selectedToken);
-        selectionManager.ForceTimeUp();
+        ResetSelection();
+
+        if (physicallyClicked)
+        {
+            SelectionManager.instance.ForceTimeUp();
+        }
     }
 }
