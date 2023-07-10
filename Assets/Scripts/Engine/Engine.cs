@@ -94,10 +94,19 @@ namespace GameplayEngine
 
             // Check if the target position is a legal move for the token
             List<(int, int)> legalMoves = token.FindLegalMoves(board);
+            UnityEngine.Debug.Log(legalMoves.Count);
             if (!legalMoves.Contains((targetX, targetY)))
             {
                 UnityEngine.Debug.Log("Invalid move.");
                 return;
+            }
+
+            // Check if there is a token at the target position
+            Token capturedToken = board.GetTokenAtPosition(targetX, targetY);
+            if (capturedToken != null)
+            {
+                // Remove the captured token from the dictionary
+                tokensByName.Remove(capturedToken.Name);
             }
 
             // Move the token to the target position on the board
@@ -107,7 +116,6 @@ namespace GameplayEngine
             tokensByName[token.Name].X = targetX;
             tokensByName[token.Name].Y = targetY;
         }
-
 
         // Method to handle a board state input and update the board
         public void HandleBoardState(string boardState)
@@ -177,20 +185,26 @@ namespace GameplayEngine
             return boardState.TrimEnd(';');
         }
 
-        // Method to find the best move for a player and perform it on the board
-        public void PerformBestMove(string player, int depth)
+        // Method to find the best move for a player and return it as a string
+        public string GetBestMove(string player, int depth)
         {
-            (Token token, (int, int) move) = board.FindBestMove(player, depth);
+            // Create a temporary TestBoard object for the FindBestMove method to manipulate
+            Board testBoard = board.CreateCopy();
+
+            (Token token, (int, int) move) = testBoard.FindBestMove(player, depth);
             if (token == null)
             {
-                Console.WriteLine($"No legal moves found for player '{player}'.");
-                return;
+                UnityEngine.Debug.Log($"No legal moves found for player '{player}'.");
+                return null;
             }
 
             int targetX = move.Item1;
             int targetY = move.Item2;
 
-            board.PlaceToken(token, targetX, targetY);
+            // Return the best move as a string without updating the token's position
+            return $"{token.Name}:{targetX},{targetY}";
         }
+
+
     }
 }

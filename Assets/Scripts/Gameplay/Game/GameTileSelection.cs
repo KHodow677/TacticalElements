@@ -65,7 +65,7 @@ public class GameTileSelection : MonoBehaviour
         GameObject selectedTokenObject = gameTokenSelection.selectedToken;
         GameObject tokenAtTile = GetTokenAtPosition(selectedTile.transform.position, "Player 2");
 
-        GameplayManager.instance.MakeMove(selectedTokenObject, selectedTile.transform.position, tokenAtTile);
+        GameplayManager.instance.MakeMove(selectedTokenObject.name, selectedTile.transform.position);
 
         isSelecting = false;
     }

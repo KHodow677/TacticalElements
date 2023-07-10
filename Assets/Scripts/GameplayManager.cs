@@ -18,6 +18,8 @@ public class GameplayManager : MonoBehaviour
     [SerializeField] private Transform playerTransform;
     [SerializeField] private Transform enemyTransform;
 
+    [SerializeField] private int engineDepth;
+
     [Header("Tile: Order is Top->Bottom Left -> Right")]
     [SerializeField] private List<Transform> allTileTransforms;
 
@@ -47,11 +49,10 @@ public class GameplayManager : MonoBehaviour
         gameplayEngine.HandleBoardState(initialBoardState);
     }
 
-    public void MakeMove(GameObject token, Vector3 targetPosition, GameObject targetToken)
+    public void MakeMove(string tokenName, Vector3 targetPosition)
     {
-        string move = GenerateMoveString(token.name, targetPosition);
+        string move = GenerateMoveString(tokenName, targetPosition);
         MakeMoveFromString(move);
-        Debug.Log(gameplayEngine.GetBoardState());
     }
 
     public void MakeMoveFromString(string move)
@@ -71,7 +72,6 @@ public class GameplayManager : MonoBehaviour
         Transform player = side == "Player 1" ? playerTransform : enemyTransform;
         Transform otherPlayer = side == "Player 1" ? enemyTransform : playerTransform;
 
-        
         GameObject token = GetTokenAtPosition(tokenPosition, player);
         GameObject targetToken = GetTokenAtPosition(targetPosition, otherPlayer);
 
@@ -80,6 +80,15 @@ public class GameplayManager : MonoBehaviour
         TokenMoveController tokenMover = token.GetComponent<TokenMoveController>();
         if (targetToken == null) { tokenMover.StartMoveToPosition(targetPosition); }
         else { tokenMover.StartMoveToPosition(targetPosition, targetToken); }
+
+        Debug.Log(gameplayEngine.GetBoardState());
+    }
+
+    public void MakeBestMove(string side)
+    {
+        string move = gameplayEngine.GetBestMove(side, engineDepth);
+        Debug.Log(move);
+        MakeMoveFromString(move);
     }
 
     private Token[] GetSideTokens(Transform sideTransform)
@@ -170,7 +179,6 @@ public class GameplayManager : MonoBehaviour
                 return sideTransform.GetChild(i).gameObject;
             }
         }
-
         return null;
     }
 

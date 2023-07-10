@@ -99,7 +99,7 @@ namespace GameplayEngine
             {
                 // Perform the move on a copy of the board
                 Board copyBoard = CreateCopy();
-                copyBoard.PlaceToken(token, move.Item1, move.Item2);
+                copyBoard.MoveToken(token, move.Item1, move.Item2);
 
                 // Calculate the minimax value for the opponent
                 int value = Minimax(copyBoard, GetOpponentPlayer(player), alpha, beta, false, depth - 1);
@@ -176,6 +176,7 @@ namespace GameplayEngine
             }
         }
 
+
         // Method to check if the game is over (implement your own logic here)
         private bool IsGameOver()
         {
@@ -184,7 +185,7 @@ namespace GameplayEngine
         }
 
         // Method to create a copy of the board
-        private Board CreateCopy()
+        public Board CreateCopy()
         {
             Board copyBoard = new Board();
 
