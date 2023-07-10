@@ -188,22 +188,40 @@ namespace GameplayEngine
         // Method to find the best move for a player and return it as a string
         public string GetBestMove(string player, int depth)
         {
-            // Create a temporary TestBoard object for the FindBestMove method to manipulate
             Board testBoard = board.CreateCopy();
 
-            (Token token, (int, int) move) = testBoard.FindBestMove(player, depth);
-            if (token == null)
+            List<(Token, (int, int))> allLegalMoves = testBoard.FindAllLegalMoves(player);
+
+            if (allLegalMoves.Count == 0)
             {
                 UnityEngine.Debug.Log($"No legal moves found for player '{player}'.");
                 return null;
             }
 
-            int targetX = move.Item1;
-            int targetY = move.Item2;
+            (Token token, (int, int)) bestMove = allLegalMoves[0];
+            int alpha = int.MinValue;
+            int beta = int.MaxValue;
 
-            // Return the best move as a string without updating the token's position
-            return $"{token.Name}:{targetX},{targetY}";
+            for (int i = 1; i < allLegalMoves.Count; i++)
+            {
+                (Token token, (int, int) move) = allLegalMoves[i];
+                Board copyBoard = testBoard.CreateCopy();
+                copyBoard.MoveToken(token, move.Item1, move.Item2);
+                int value = Minimax(copyBoard, GetOpponentPlayer(player), alpha, beta, false, depth - 1);
+
+                if (value > alpha)
+                {
+                    alpha = value;
+                    bestMove = (token, move);
+                }
+            }
+
+            int targetX = bestMove.Item2.Item1;
+            int targetY = bestMove.Item2.Item2;
+
+            return $"{bestMove.Item1.Name}:{targetX},{targetY}";
         }
+
 
 
     }
