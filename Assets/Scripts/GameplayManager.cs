@@ -15,6 +15,8 @@ public class GameplayManager : MonoBehaviour
 
     private Engine gameplayEngine;
 
+    [SerializeField] private SceneFader sceneFader;
+
     [SerializeField] private Transform playerTransform;
     [SerializeField] private Transform enemyTransform;
 
@@ -81,13 +83,17 @@ public class GameplayManager : MonoBehaviour
         if (targetToken == null) { tokenMover.StartMoveToPosition(targetPosition); }
         else { tokenMover.StartMoveToPosition(targetPosition, targetToken); }
 
-        Debug.Log(gameplayEngine.GetBoardState());
+        
     }
 
     public void MakeBestMove(string side)
     {
         string move = gameplayEngine.GetBestMove(side, engineDepth);
-        Debug.Log(move);
+        if (move == null)
+        {
+            SelectionManager.instance.gameMode = SelectionManager.GameMode.GameOver;
+            StartCoroutine(sceneFader.FadeAndLoadScene(SceneFader.FadeDirection.In, "Lose Scene"));
+        }
         MakeMoveFromString(move);
     }
 

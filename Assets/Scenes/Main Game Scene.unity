@@ -6025,6 +6025,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60f1bc705ec4f74418ee4d68846b9eab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneFader: {fileID: 5697054617648365799}
   playerTransform: {fileID: 1345751725}
   enemyTransform: {fileID: 1652425198}
   engineDepth: 5

@@ -16,6 +16,25 @@ namespace GameplayEngine
             tiles = new Token[5, 5];
         }
 
+        // Constructor that copies tokens from another board
+        public Board(Board board)
+        {
+            tiles = new Token[5, 5];
+
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    Token token = board.GetTokenAtPosition(i, j);
+                    if (token != null)
+                    {
+                        Token copyToken = new Token(token.Name, token.X, token.Y, token.Player, token.MoveOffsets);
+                        PlaceToken(copyToken, token.X, token.Y);
+                    }
+                }
+            }
+        }
+
         // Method to place a token on the board
         public void PlaceToken(Token token, int x, int y)
         {
@@ -116,7 +135,7 @@ namespace GameplayEngine
 
 
         // Recursive method for the minimax algorithm with alpha-beta pruning
-        private int Minimax(Board board, string player, int alpha, int beta, bool isMaximizingPlayer, int depth)
+        public int Minimax(Board board, string player, int alpha, int beta, bool isMaximizingPlayer, int depth)
         {
             // Base case: Check if the game is over or depth limit is reached
             if (board.IsGameOver() || depth == 0)

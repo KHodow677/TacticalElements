@@ -161,7 +161,7 @@ namespace GameplayEngine
                 return token.FindLegalMoves(board);
             }
             // Token not found, return an empty list
-            return new List<(int, int)>(); 
+            return new List<(int, int)>();
         }
 
         // Method to get the current state of the board
@@ -185,12 +185,9 @@ namespace GameplayEngine
             return boardState.TrimEnd(';');
         }
 
-        // Method to find the best move for a player and return it as a string
         public string GetBestMove(string player, int depth)
         {
-            Board testBoard = board.CreateCopy();
-
-            List<(Token, (int, int))> allLegalMoves = testBoard.FindAllLegalMoves(player);
+            List<(Token, (int, int))> allLegalMoves = board.FindAllLegalMoves(player);
 
             if (allLegalMoves.Count == 0)
             {
@@ -198,22 +195,13 @@ namespace GameplayEngine
                 return null;
             }
 
-            (Token token, (int, int)) bestMove = allLegalMoves[0];
-            int alpha = int.MinValue;
-            int beta = int.MaxValue;
+            Board copyBoard = new Board(board);
 
-            for (int i = 1; i < allLegalMoves.Count; i++)
+            (Token token, (int, int)) bestMove = copyBoard.FindBestMove(player, depth);
+
+            if(bestMove.Item1  == null)
             {
-                (Token token, (int, int) move) = allLegalMoves[i];
-                Board copyBoard = testBoard.CreateCopy();
-                copyBoard.MoveToken(token, move.Item1, move.Item2);
-                int value = Minimax(copyBoard, GetOpponentPlayer(player), alpha, beta, false, depth - 1);
-
-                if (value > alpha)
-                {
-                    alpha = value;
-                    bestMove = (token, move);
-                }
+                bestMove = allLegalMoves[0];
             }
 
             int targetX = bestMove.Item2.Item1;
@@ -221,8 +209,6 @@ namespace GameplayEngine
 
             return $"{bestMove.Item1.Name}:{targetX},{targetY}";
         }
-
-
 
     }
 }
