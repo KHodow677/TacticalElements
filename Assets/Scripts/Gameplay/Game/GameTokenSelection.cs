@@ -55,17 +55,16 @@ public class GameTokenSelection : MonoBehaviour
     }
     private List<GameObject> GetActivePlayerTokens()
     {
-        ColliderManager.instance.SwitchToTilesActivated();
         List<GameObject> activeTokens = new List<GameObject>();
         for (int i = 0; i < transform.childCount; i++)
         {
-            GameObject childObject = transform.GetChild(i).gameObject;
-            if (!childObject.activeInHierarchy) { continue; }
-            int tileCount = gameTileSelection.GetAvailableTiles(childObject, "Player").Count;
-            if (tileCount == 0) { continue; }
-            activeTokens.Add(childObject);
+            int moveCount = GameplayManager.instance.GetLegalMoves(transform.GetChild(i).name).Count;
+            if (moveCount > 0)
+            {
+                activeTokens.Add(transform.GetChild(i).gameObject);
+            }
         }
-        ColliderManager.instance.SwitchToTilesDeactivated();
+        Debug.Log(activeTokens.Count);
         return activeTokens;
     }
 
@@ -78,7 +77,6 @@ public class GameTokenSelection : MonoBehaviour
         SelectionManager.instance.PauseClock();
         SelectionManager.instance.gameMode = SelectionManager.GameMode.GameOver;
         StartCoroutine(sceneFader.FadeAndLoadScene(SceneFader.FadeDirection.In, "Lose Scene"));
-        SceneManager.LoadScene("Lose Scene");
     }
 
     private async void SetSameTurnDelayed(float delayInSeconds)
@@ -107,17 +105,13 @@ public class GameTokenSelection : MonoBehaviour
 
     private void OnTokenHovered(GameObject token)
     {
-        ColliderManager.instance.SwitchToTilesActivated();
         if (!tokens.Contains(token)) { return; }
         gameTileSelection.HighlightAvailableTiles(token, "Player 1");
-        ColliderManager.instance.SwitchToTilesDeactivated();
     }
     private void OnTokenUnhovered(GameObject token)
     {
-        ColliderManager.instance.SwitchToTilesActivated();
         if (!tokens.Contains(token)) { return; }
         gameTileSelection.UnhighlightAvailableTiles(token, "Player 1");
-        ColliderManager.instance.SwitchToTilesDeactivated();
     }
 
     private void ResetSelection()

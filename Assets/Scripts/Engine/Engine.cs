@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace GameplayEngine
 {
+
+
     public class Engine
     {
         private Board board;
@@ -94,7 +97,6 @@ namespace GameplayEngine
 
             // Check if the target position is a legal move for the token
             List<(int, int)> legalMoves = token.FindLegalMoves(board);
-            UnityEngine.Debug.Log(legalMoves.Count);
             if (!legalMoves.Contains((targetX, targetY)))
             {
                 UnityEngine.Debug.Log("Invalid move.");
@@ -185,7 +187,7 @@ namespace GameplayEngine
             return boardState.TrimEnd(';');
         }
 
-        public string GetBestMove(string player, int depth)
+        public async Task<string> GetBestMoveAsync(string player, int depth)
         {
             List<(Token, (int, int))> allLegalMoves = board.FindAllLegalMoves(player);
 
@@ -197,9 +199,9 @@ namespace GameplayEngine
 
             Board copyBoard = new Board(board);
 
-            (Token token, (int, int)) bestMove = copyBoard.FindBestMove(player, depth);
+            (Token token, (int, int)) bestMove = await Task.Run(() => copyBoard.FindBestMove(player, depth));
 
-            if(bestMove.Item1  == null)
+            if (bestMove.Item1 == null)
             {
                 bestMove = allLegalMoves[0];
             }

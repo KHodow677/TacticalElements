@@ -23,7 +23,7 @@ public class GameplayManager : MonoBehaviour
     [SerializeField] private int engineDepth;
 
     [Header("Tile: Order is Top->Bottom Left -> Right")]
-    [SerializeField] private List<Transform> allTileTransforms;
+    [SerializeField] public List<Transform> allTileTransforms;
 
     private void Awake()
     {
@@ -82,17 +82,15 @@ public class GameplayManager : MonoBehaviour
         TokenMoveController tokenMover = token.GetComponent<TokenMoveController>();
         if (targetToken == null) { tokenMover.StartMoveToPosition(targetPosition); }
         else { tokenMover.StartMoveToPosition(targetPosition, targetToken); }
-
-        
     }
 
-    public void MakeBestMove(string side)
+    public async void MakeBestMove(string side)
     {
-        string move = gameplayEngine.GetBestMove(side, engineDepth);
+        string move = await gameplayEngine.GetBestMoveAsync(side, engineDepth);
         if (move == null)
         {
             SelectionManager.instance.gameMode = SelectionManager.GameMode.GameOver;
-            StartCoroutine(sceneFader.FadeAndLoadScene(SceneFader.FadeDirection.In, "Lose Scene"));
+            StartCoroutine(sceneFader.FadeAndLoadScene(SceneFader.FadeDirection.In, "Win Scene"));
         }
         MakeMoveFromString(move);
     }

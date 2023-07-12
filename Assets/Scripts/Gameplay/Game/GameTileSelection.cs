@@ -110,22 +110,28 @@ public class GameTileSelection : MonoBehaviour
 
     public GameObject GetTileAtPosition(Vector3 position)
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(position, 0.1f, LayerMask.GetMask("Tile"));
-
-        if (colliders != null && colliders.Length > 0)
+        foreach(Transform tileTransform in GameplayManager.instance.allTileTransforms)
         {
-            return colliders[0].gameObject;
+            if (tileTransform.position == position)
+            {
+                return tileTransform.gameObject;
+            }
         }
         return null;
     }
 
     public GameObject GetTokenAtPosition(Vector3 position, string side)
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(position, 0.1f, LayerMask.GetMask("Token"));
+        Transform player1Transform = gameTokenSelection.transform;
+        Transform player2Transform = gameTokenSelection.transform;
 
-        if (colliders != null && colliders.Length > 0)
+        for (int i = 0; i < player1Transform.childCount; i++)
         {
-            if (colliders[0].gameObject.tag == side) { return colliders[0].gameObject; }
+            if (player1Transform.GetChild(i).position == position) { return player1Transform.GetChild(i).gameObject; }
+        }
+        for (int i = 0; i < player2Transform.childCount; i++)
+        {
+            if (player2Transform.GetChild(i).position == position) { return player2Transform.GetChild(i).gameObject; }
         }
         return null;
     }
