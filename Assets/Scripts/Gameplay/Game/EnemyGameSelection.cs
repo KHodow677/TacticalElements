@@ -49,7 +49,8 @@ public class EnemyGameSelection : MonoBehaviour {
 
         SelectionManager.instance.UnpauseClock();
 
-        GameplayManager.instance.MakeBestMove("Player 2");
+        string move = await GameplayManager.instance.GetBestMove("Player 2");
+        GameplayManager.instance.MakeMoveFromString(move);
 
         await Task.Delay(TimeSpan.FromSeconds(moveDuration));
 

@@ -11,15 +11,19 @@ namespace GameplayEngine
     {
         private Token[,] tiles; // 2D array representing the tiles on the board
 
+        private Dictionary<string, Token> tokensByName;
+
         public Board()
         {
             tiles = new Token[5, 5];
+            tokensByName = new Dictionary<string, Token>();
         }
 
         // Constructor that copies tokens from another board
         public Board(Board board)
         {
             tiles = new Token[5, 5];
+            tokensByName = new Dictionary<string, Token>();
 
             for (int i = 0; i < 5; i++)
             {
@@ -41,6 +45,7 @@ namespace GameplayEngine
             tiles[x, y] = token;
             token.X = x;
             token.Y = y;
+            tokensByName[token.Name] = token; // Add the token to the tokensByName dictionary
         }
 
         // Method to move a token to a new position on the board
@@ -247,7 +252,36 @@ namespace GameplayEngine
         {
             int playerTokens = 0;
             int opponentTokens = 0;
+            int positionalAdvantage = 0;
 
+            // Define weights or scores for positional advantage
+            int[,] positionWeights = new int[5, 5]
+            {
+                { 1, 2, 2, 2, 1 },
+                { 2, 2, 2, 2, 2 },
+                { 2, 2, 2, 2, 2 },
+                { 2, 2, 2, 2, 2 },
+                { 1, 2, 2, 2, 1 }
+            };
+
+            // Define token importance scores
+            Dictionary<string, int> tokenScores = new Dictionary<string, int>()
+            {
+                { "Fire Token Variant", 3 },
+                { "Ice Token Variant", 3 },
+                { "Water Token Variant", 1 },
+                { "Earth Token Variant", 1 },
+                { "Land Storm Token Variant", 3 },
+                { "Electricity Token Variant", 2 },
+                { "Wind Token Variant", 2 },
+                { "Plant Token Variant", 4 },
+                { "Sea Storm Token Variant", 3 },
+                { "Poison Token Variant", 4 },
+                { "Light Token Variant", 5 },
+                { "Dark Token Variant", 5 }
+            };
+
+            // Calculate the player and opponent tokens count and positional advantage
             for (int i = 0; i < 5; i++)
             {
                 for (int j = 0; j < 5; j++)
@@ -256,15 +290,27 @@ namespace GameplayEngine
                     if (token != null)
                     {
                         if (token.Player == player)
+                        {
                             playerTokens++;
+                            positionalAdvantage += positionWeights[i, j];
+                        }
                         else
+                        {
                             opponentTokens++;
+                            positionalAdvantage -= positionWeights[i, j];
+                        }
                     }
                 }
             }
 
-            // Return the difference between the number of player tokens and opponent tokens
-            return playerTokens - opponentTokens;
+            // Calculate the overall evaluation score
+            int playerScore = playerTokens * 10;
+            int opponentScore = opponentTokens * 10;
+            int positionalScore = positionalAdvantage;
+            int tokenImportanceScore = tokensByName.Values.Sum(t => tokenScores.GetValueOrDefault(t.Name, 0));
+
+            // Return the sum of all evaluation components
+            return playerScore + positionalScore + tokenImportanceScore - opponentScore;
         }
     }
 }

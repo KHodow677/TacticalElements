@@ -7,6 +7,7 @@ using System;
 using System.Text;
 using PlasticGui.WorkspaceWindow;
 using UnityEditor.AssetImporters;
+using System.Threading.Tasks;
 
 public class GameplayManager : MonoBehaviour
 {
@@ -59,6 +60,12 @@ public class GameplayManager : MonoBehaviour
 
     public void MakeMoveFromString(string move)
     {
+        if (move == null)
+        {
+            SelectionManager.instance.gameMode = SelectionManager.GameMode.GameOver;
+            StartCoroutine(sceneFader.FadeAndLoadScene(SceneFader.FadeDirection.In, "Win Scene"));
+        }
+
         string tokenName = gameplayEngine.GetTokenNameFromMove(move);
         if (tokenName == null) { return; }
 
@@ -84,16 +91,7 @@ public class GameplayManager : MonoBehaviour
         else { tokenMover.StartMoveToPosition(targetPosition, targetToken); }
     }
 
-    public async void MakeBestMove(string side)
-    {
-        string move = await gameplayEngine.GetBestMoveAsync(side, engineDepth);
-        if (move == null)
-        {
-            SelectionManager.instance.gameMode = SelectionManager.GameMode.GameOver;
-            StartCoroutine(sceneFader.FadeAndLoadScene(SceneFader.FadeDirection.In, "Win Scene"));
-        }
-        MakeMoveFromString(move);
-    }
+    public async Task<string> GetBestMove(string side) => await gameplayEngine.GetBestMoveAsync(side, engineDepth);
 
     private Token[] GetSideTokens(Transform sideTransform)
     {
