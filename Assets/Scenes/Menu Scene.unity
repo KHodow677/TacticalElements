@@ -221,7 +221,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneFader: {fileID: 2012743278}
   tokenDisplayObject: {fileID: 0}
-  scaleSpeed: 0
+  scaleSpeed: 0.2
   timePerTurn: 10
   spaceHoldTimeToQuit: 3
   timeLeft: 0
@@ -2109,6 +2109,38 @@ PrefabInstance:
     - target: {fileID: 6940665328426212306, guid: 6a68f6b166ba91343afc3ac116eaf73e, type: 3}
       propertyPath: m_TagString
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 6940665328426212307, guid: 6a68f6b166ba91343afc3ac116eaf73e, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7657365287872043289, guid: 6a68f6b166ba91343afc3ac116eaf73e, type: 3}
+      propertyPath: m_Size.x
+      value: 6.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7657365287872043289, guid: 6a68f6b166ba91343afc3ac116eaf73e, type: 3}
+      propertyPath: m_Size.y
+      value: 6.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7657365287872043289, guid: 6a68f6b166ba91343afc3ac116eaf73e, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -167575062, guid: 505790e8144d09440b4ade55aa465765, type: 3}
+    - target: {fileID: 7657365287872043289, guid: 6a68f6b166ba91343afc3ac116eaf73e, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9177234238795159279, guid: 6a68f6b166ba91343afc3ac116eaf73e, type: 3}
+      propertyPath: m_SortingLayer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9177234238795159279, guid: 6a68f6b166ba91343afc3ac116eaf73e, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9177234238795159279, guid: 6a68f6b166ba91343afc3ac116eaf73e, type: 3}
+      propertyPath: m_SortingLayerID
+      value: -477506163
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3707566455851235044, guid: 6a68f6b166ba91343afc3ac116eaf73e, type: 3}

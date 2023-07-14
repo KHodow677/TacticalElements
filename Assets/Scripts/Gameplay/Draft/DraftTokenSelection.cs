@@ -8,7 +8,6 @@ public class DraftTokenSelection : MonoBehaviour
     [SerializeField] private DraftTileSelection draftTileSelection;
     [SerializeField] private EnemyDraftSelection enemyDraftSelection;
     [SerializeField] private GameObject tokenDisplayObject;
-    [SerializeField] private float tokenScaleSpeed;
     [SerializeField] private GameObject playerTokenParent;
     [SerializeField] public List<GameObject> tokens;
 
@@ -97,9 +96,9 @@ public class DraftTokenSelection : MonoBehaviour
     {
         if (!isSelecting) { return; }
         if (!tokens.Contains(token)) { return; }
-        ColliderManager.instance.SwitchToTilesActivated();
-        ColliderManager.instance.SwitchToTokensDeactivated();
         selectedToken = token;
+        ColliderManager.instance.SwitchToTilesActivated();
+        ColliderManager.instance.SwitchToTokensDeactivated(selectedToken);
         DeactivateTokenSelection();
         ResetSelection();
         if(physicallyClicked)

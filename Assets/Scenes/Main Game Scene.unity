@@ -7169,6 +7169,8 @@ MonoBehaviour:
   - {fileID: 345539075}
   - {fileID: 1967922828}
   scaleTime: 0.1
+  draftTokenSelection: {fileID: 1119410236}
+  gameTokenSelection: {fileID: 1345751727}
 --- !u!1 &1518278594
 GameObject:
   m_ObjectHideFlags: 0
@@ -10041,7 +10043,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3576825087567514200, guid: 9e97087efaccdd243951b32b79483105, type: 3}
       propertyPath: scaleSpeed
-      value: 0.1
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3576825087567514200, guid: 9e97087efaccdd243951b32b79483105, type: 3}
       propertyPath: sceneFader

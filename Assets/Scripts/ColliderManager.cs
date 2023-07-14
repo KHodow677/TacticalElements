@@ -14,6 +14,9 @@ public class ColliderManager : MonoBehaviour
     private List<ScaleObject> tokenScalers;
     private List<ScaleObject> tileScalers;
 
+    [SerializeField] DraftTokenSelection draftTokenSelection;
+    [SerializeField] GameTokenSelection gameTokenSelection;
+
     private void Awake()
     {
         // Ensure only one instance of the class exists
@@ -58,11 +61,14 @@ public class ColliderManager : MonoBehaviour
         }
     }
 
-    public void SwitchToTokensDeactivated()
+    public void SwitchToTokensDeactivated(GameObject token = null)
     {
         for (int i = 0; i < tokenColliders.Count; i++)
         {
-            tokenScalers[i].ScaleDown(scaleTime);
+            if (token == null || token != tokenColliders[i].gameObject)
+            {
+                tokenScalers[i].ScaleDown(scaleTime);
+            }
             tokenColliders[i].enabled = false;
         }
     }

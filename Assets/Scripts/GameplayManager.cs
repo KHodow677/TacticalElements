@@ -5,8 +5,6 @@ using GameplayEngine;
 using System.Linq;
 using System;
 using System.Text;
-using PlasticGui.WorkspaceWindow;
-using UnityEditor.AssetImporters;
 using System.Threading.Tasks;
 
 public class GameplayManager : MonoBehaviour

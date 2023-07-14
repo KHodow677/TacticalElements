@@ -125,9 +125,9 @@ public class GameTokenSelection : MonoBehaviour
     private void OnTokenClicked(GameObject token, bool physicallyClicked)
     {
         if (!tokens.Contains(token)) { return; }
-        ColliderManager.instance.SwitchToTilesActivated();
-        ColliderManager.instance.SwitchToTokensDeactivated();
         selectedToken = token;
+        ColliderManager.instance.SwitchToTilesActivated();
+        ColliderManager.instance.SwitchToTokensDeactivated(selectedToken);
         DeactivateTokenSelection();
         ResetSelection();
 

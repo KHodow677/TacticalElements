@@ -724,7 +724,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2348bb48dd2d7b845b8728f7c1ba823f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveDuration: 0.25
+  moveDuration: 0.5
   captureParticlePrefab: {fileID: 6208591774709234248, guid: 56991e6208948a945b537cc70c30e9cf, type: 3}
   particleColor: {r: 0, g: 0, b: 0, a: 0}
   isMoving: 0
