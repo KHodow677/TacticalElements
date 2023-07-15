@@ -12,6 +12,7 @@ public class ScaleObject : MonoBehaviour {
     /// </summary>
     /// <param name="time">Time in seconds</param>
     public void ScaleUp (float time) {
+        if (transform.localScale == largerScale) { return; }
         ScaleTransform(largerScale, time);
     }
 
@@ -20,6 +21,7 @@ public class ScaleObject : MonoBehaviour {
     /// </summary>
     /// <param name="time">Time in seconds</param>
     public void ScaleDown (float time) {
+        if (transform.localScale == normalScale) { return; }
         ScaleTransform(normalScale, time);
     }
 
@@ -30,10 +32,6 @@ public class ScaleObject : MonoBehaviour {
     /// <param name="time">Time in seconds</param>
     private void ScaleTransform(Vector3 targetScale, float time)
     {
-        if (transform.localScale ==  targetScale)
-        {
-            return;
-        }
         // Use DoTween's scale animation to animate the scaling
         transform.DOScale(targetScale, time)
             .SetEase(Ease.InOutSine);

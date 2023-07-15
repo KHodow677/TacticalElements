@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.Experimental.Rendering.Universal;
 using DG.Tweening;
+using System.Threading.Tasks;
 
 public class TokenMoveController : MonoBehaviour
 {
@@ -18,12 +19,13 @@ public class TokenMoveController : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    private void MoveToPosition(Vector3 targetPosition, float moveDuration, GameObject tokenAtPosition)
+    private async void MoveToPosition(Vector3 targetPosition, float moveDuration, GameObject tokenAtPosition)
     {
         // Set up movement
         isMoving = true;
         Vector3 startPosition = transform.position;
-        scaleObject.ScaleUp(0.2f);
+        scaleObject.ScaleUp(0.1f);
+        await Task.Delay((int) (0.1f * 1000));
         spriteRenderer.sortingOrder = 3;
 
         // Use DoMove to animate the movement
@@ -53,7 +55,8 @@ public class TokenMoveController : MonoBehaviour
 
                 // Tear down movement
                 isMoving = false;
-                scaleObject.ScaleDown(0.2f);
+                scaleObject.ScaleDown(0.1f);
+                Debug.Log("Hi");
                 spriteRenderer.sortingOrder = 2;
             });
     }

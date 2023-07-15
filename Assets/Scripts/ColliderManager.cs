@@ -48,7 +48,7 @@ public class ColliderManager : MonoBehaviour
     {
         for (int i = 0; i < tileColliders.Count; i++)
         {
-            tileScalers[i].ScaleDown(scaleTime);
+/*            tileScalers[i].ScaleDown(scaleTime);*/
             tileColliders[i].enabled = false;
         }
     }
@@ -65,10 +65,10 @@ public class ColliderManager : MonoBehaviour
     {
         for (int i = 0; i < tokenColliders.Count; i++)
         {
-            if (token == null || token != tokenColliders[i].gameObject)
+/*            if (token == null || token != tokenColliders[i].gameObject)
             {
                 tokenScalers[i].ScaleDown(scaleTime);
-            }
+            }*/
             tokenColliders[i].enabled = false;
         }
     }

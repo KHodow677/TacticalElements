@@ -120,6 +120,7 @@ public class GameTokenSelection : MonoBehaviour
         selectionManager.selectionMode = SelectionManager.SelectionMode.Tile;
         selectionManager.playerTurn = SelectionManager.PlayerTurn.Player2;
         selectionManager.SetSelectedToken(selectedToken);
+        selectedToken.GetComponent<ScaleObject>().ScaleDown(tokenScaleSpeed);
     }
 
     private void OnTokenClicked(GameObject token, bool physicallyClicked)

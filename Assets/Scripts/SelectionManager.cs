@@ -123,7 +123,6 @@ public class SelectionManager : MonoBehaviour {
 
     public void ClearSelectedToken()
     {
-        OnTokenDeselect(selectedToken);
         selectedToken = null;
     }
 
@@ -149,7 +148,7 @@ public class SelectionManager : MonoBehaviour {
         await Task.Delay((int)(scaleSpeed * 1000));
         obj.SetActive(false);
     }
-
+     
     public void ForceTimeUp(){
         timeUp?.Invoke();
         timeLeft = timePerTurn;

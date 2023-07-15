@@ -10,6 +10,7 @@ public class DraftTokenSelection : MonoBehaviour
     [SerializeField] private GameObject tokenDisplayObject;
     [SerializeField] private GameObject playerTokenParent;
     [SerializeField] public List<GameObject> tokens;
+    [SerializeField] private float tokenScaleSpeed;
 
     [HideInInspector] public bool isSelecting; 
     [HideInInspector] public bool isPlayerTurn = true;
@@ -79,7 +80,6 @@ public class DraftTokenSelection : MonoBehaviour
         tokens.Remove(selectedToken);
         enemyDraftSelection.tokens.Remove(selectedToken);
         selectedToken.GetComponent<TokenState>().SetPlayerOwned();
-        //ResetSelectedTileDelayed(0.1f);
 
         isSelecting = false;
     }
@@ -90,6 +90,7 @@ public class DraftTokenSelection : MonoBehaviour
         selectionManager.selectionMode = SelectionManager.SelectionMode.Tile;
         selectionManager.playerTurn = SelectionManager.PlayerTurn.Player2;
         selectionManager.SetSelectedToken(selectedToken);
+        selectedToken.GetComponent<ScaleObject>().ScaleDown(tokenScaleSpeed);
     }
 
     private void OnTokenClicked(GameObject token, bool physicallyClicked)

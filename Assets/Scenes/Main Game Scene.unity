@@ -7801,7 +7801,7 @@ MonoBehaviour:
   gameTokenSelection: {fileID: 1345751727}
   gameTileSelection: {fileID: 1345751726}
   sceneFader: {fileID: 5697054617648365799}
-  timePerTurn: 1
+  timePerTurn: 0.5
   isSelecting: 0
   isEnemyTurn: 0
   moveDuration: 0.25
@@ -9897,6 +9897,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3856742090415361131, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
+      propertyPath: tokenScaleSpeed
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3856742090415361131, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
       propertyPath: enemyTokenParent
       value: 
       objectReference: {fileID: 1652425197}
@@ -10043,7 +10047,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3576825087567514200, guid: 9e97087efaccdd243951b32b79483105, type: 3}
       propertyPath: scaleSpeed
-      value: 0.2
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 3576825087567514200, guid: 9e97087efaccdd243951b32b79483105, type: 3}
       propertyPath: sceneFader
