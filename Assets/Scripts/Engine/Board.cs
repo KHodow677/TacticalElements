@@ -22,21 +22,9 @@ namespace GameplayEngine
         // Constructor that copies tokens from another board
         public Board(Board board)
         {
-            tiles = new Token[5, 5];
-            tokensByName = new Dictionary<string, Token>();
-
-            for (int i = 0; i < 5; i++)
-            {
-                for (int j = 0; j < 5; j++)
-                {
-                    Token token = board.GetTokenAtPosition(i, j);
-                    if (token != null)
-                    {
-                        Token copyToken = new Token(token.Name, token.X, token.Y, token.Player, token.MoveOffsets);
-                        PlaceToken(copyToken, token.X, token.Y);
-                    }
-                }
-            }
+            Board copyBoard = board.CreateCopy();
+            tiles = copyBoard.tiles;
+            tokensByName = copyBoard.tokensByName;
         }
 
         // Method to place a token on the board
@@ -122,7 +110,7 @@ namespace GameplayEngine
             foreach ((Token token, (int, int) move) in allLegalMoves)
             {
                 // Perform the move on a copy of the board
-                Board copyBoard = CreateCopy();
+                Board copyBoard = new Board(this);
                 copyBoard.MoveToken(token, move.Item1, move.Item2);
 
                 // Calculate the minimax value for the opponent
@@ -157,7 +145,7 @@ namespace GameplayEngine
                 foreach ((Token token, (int, int) move) in allLegalMoves)
                 {
                     // Perform the move on a copy of the board
-                    Board copyBoard = board.CreateCopy();
+                    Board copyBoard = new Board(board);
                     copyBoard.PlaceToken(token, move.Item1, move.Item2);
 
                     int eval = Minimax(copyBoard, GetOpponentPlayer(player), alpha, beta, false, depth - 1);
@@ -182,7 +170,7 @@ namespace GameplayEngine
                 foreach ((Token token, (int, int) move) in allLegalMoves)
                 {
                     // Perform the move on a copy of the board
-                    Board copyBoard = board.CreateCopy();
+                    Board copyBoard = new Board(board);
                     copyBoard.PlaceToken(token, move.Item1, move.Item2);
 
                     int eval = Minimax(copyBoard, GetOpponentPlayer(player), alpha, beta, true, depth - 1);

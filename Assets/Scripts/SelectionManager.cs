@@ -123,6 +123,7 @@ public class SelectionManager : MonoBehaviour {
 
     public void ClearSelectedToken()
     {
+        HandleDisplayToken(false, selectedToken);
         selectedToken = null;
     }
 
