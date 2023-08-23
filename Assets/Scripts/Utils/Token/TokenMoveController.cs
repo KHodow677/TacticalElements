@@ -56,7 +56,6 @@ public class TokenMoveController : MonoBehaviour
                 // Tear down movement
                 isMoving = false;
                 scaleObject.ScaleDown(0.1f);
-                Debug.Log("Hi");
                 spriteRenderer.sortingOrder = 2;
             });
     }

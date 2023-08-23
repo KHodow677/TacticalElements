@@ -83,6 +83,7 @@ public class GameplayManager : MonoBehaviour
         GameObject targetToken = GetTokenAtPosition(targetPosition, otherPlayer);
 
         gameplayEngine.HandleMove(move);
+        Debug.Log(gameplayEngine.GetBoardState());
 
         TokenMoveController tokenMover = token.GetComponent<TokenMoveController>();
         if (targetToken == null) { tokenMover.StartMoveToPosition(targetPosition); }

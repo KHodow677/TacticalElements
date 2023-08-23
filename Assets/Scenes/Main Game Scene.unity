@@ -9888,6 +9888,14 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 519420031}
+    - target: {fileID: 2829305140852821646, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
+      propertyPath: m_PointLightOuterRadius
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2829305142785600545, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -1760538487, guid: c00426f5ab1b6c64e94f0931af6c3900, type: 3}
     - target: {fileID: 2829305142785600574, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
@@ -9954,7 +9962,7 @@ PrefabInstance:
       objectReference: {fileID: 6780005867077201178}
     - target: {fileID: 4724564395056882052, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4724564395056882075, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -10015,6 +10023,10 @@ PrefabInstance:
     - target: {fileID: 6075369436082809313, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6075369436295514961, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
+      propertyPath: m_PointLightOuterRadius
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6818205693247761592, guid: 8a39f5e002e65584989dfaf296a5e8b0, type: 3}
       propertyPath: m_SortingLayer

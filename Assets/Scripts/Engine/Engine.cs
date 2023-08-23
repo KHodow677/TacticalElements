@@ -99,6 +99,7 @@ namespace GameplayEngine
             List<(int, int)> legalMoves = token.FindLegalMoves(board);
             if (!legalMoves.Contains((targetX, targetY)))
             {
+                UnityEngine.Debug.Log($"{token.Name} {targetX} {targetY}");
                 UnityEngine.Debug.Log("Invalid move.");
                 return;
             }

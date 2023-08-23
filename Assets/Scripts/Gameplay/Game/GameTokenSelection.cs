@@ -64,7 +64,7 @@ public class GameTokenSelection : MonoBehaviour
                 activeTokens.Add(transform.GetChild(i).gameObject);
             }
         }
-        Debug.Log(activeTokens.Count);
+
         return activeTokens;
     }
 
